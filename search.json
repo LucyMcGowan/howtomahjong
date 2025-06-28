@@ -4,7 +4,35 @@
     "href": "index.html",
     "title": "How to Mahjong",
     "section": "",
-    "text": "Learn how to play Mahjong in just 9 easy lessons\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSetup and Seating\n\n\n\n\n\n\n\n\n\n\n\n\nGet to know the tiles\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding the Wall\n\n\n\n\n\n\n\n\n\n\n\n\nLearn to Deal\n\n\n\n\n\nNo matching items"
+    "text": "Learn how to play Mahjong in just 9 easy lessons\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSetup and Seating\n\n\n\n\n\n\n\n\n\n\n\n\nGet to know the tiles\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding the Wall\n\n\n\n\n\n\n\n\n\n\n\n\nLearn the Deal\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/4-dealing/index.html",
+    "href": "posts/4-dealing/index.html",
+    "title": "Learn the Deal",
+    "section": "",
+    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below.\n\nEast will roll the dice to break the wall (this is like cutting the deck in cards). You break the wall by counting the number rolled from the right side of the wall. These tiles are left behind, you then “push” the remaining tiles in wall forward and deal from those.\nEast takes the first tiles and then the deal continues counter-clockwise. Each player takes two stacks of tiles (4 titles total) until all players have 12 tiles\nAfter the final player (North) has 12 tiles, East takes the first and third tile from the top of the wall – they will now have 14 tiles. Then the remaining players each take 1 tile, they will each have 13 tiles.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRoll the dice to start dealing\n\n\n\n\n\n\n\n\nTotal: \n\n\nRoll Dice\n\n\n\n\n\n\n0\n\n\nTiles Dealt\n\n\n\n\nYou\n\n\nNext Deal Goes To\n\n\n\n\n\nReset Game\n\n\nShow Hint\n\n\n\n\n🎉 Perfect Deal!\n\n\nYou’ve successfully dealt all tiles correctly!\n\n\nEach player has the right number of tiles.\n\n\nPractice Again"
+  },
+  {
+    "objectID": "posts/3-wall/index.html",
+    "href": "posts/3-wall/index.html",
+    "title": "Building the Wall",
+    "section": "",
+    "text": "At the start of the game all 152 tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:\n\n19 tiles across - placed end to end in a line\n\n2 tiles high - each stack is two tiles tall\n\n38 tiles total per wall (19 × 2)\n\nAll tiles are placed face down so no one can see what they are.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n38\n\n\nTiles Remaining\n\n\n\n\n0\n\n\nStacks Built\n\n\n\n\n0\n\n\nTiles Placed\n\n\n\n\n19\n\n\nStacks Needed\n\n\n\n\n\nReset Game\n\n\nShow Hint\n\n\nAuto Complete\n\n\n\n\n\n🎉 Perfect!\n\n\nYou’ve successfully built your wall!\n\n\nYour wall has exactly 19 stacks of 2 tiles = 38 tiles total\n\n\nIn American Mahjong, each player builds and keeps their own wall during the game.\n\n\nPractice Again\n\n\n\nNext Lesson"
+  },
+  {
+    "objectID": "posts/1-setup/index.html",
+    "href": "posts/1-setup/index.html",
+    "title": "Setup and Seating",
+    "section": "",
+    "text": "Four players sit around a square table. Each place represents a wind direction:"
+  },
+  {
+    "objectID": "posts/1-setup/index.html#what-you-need",
+    "href": "posts/1-setup/index.html#what-you-need",
+    "title": "Setup and Seating",
+    "section": "What you need",
+    "text": "What you need\n\nAmerican Mahjong set (152 tiles)\nOfficial card with current year’s hands. You can purchase the official card from the National Mah Jongg League\nTwo dice\nIf you are keeping score, scoring chips or paper\n\nNext Lesson"
   },
   {
     "objectID": "posts/2-tiles/index.html",
@@ -18,34 +46,6 @@
     "href": "posts/2-tiles/index.html#examples",
     "title": "Get to know the tiles",
     "section": "Examples",
-    "text": "Examples\nThe suits look different depending on the set you are playing with, but here are some common ones:\n\n\n\nTraditional Tile Set\n\n\n\nThe Mahjong Line\n\n\n\nMy Fair Mahjong\nThere are lots of cute variations available for Mahjong sets. Here is a Southeast Series from My Fair Mahjong. If you are playing with a set you are not familiar with, you can ask to see the included card that will tell you which design represent which tiles.\n\n\n\n\n\n\n\n← Previous\n\n\nNext →\n\n\n\n\nQuick Knowledge Check\nCan you identify what type each tile is? Run through these as many times as you'd like to get to know some common tiles.\n\n\n\nReady to start?\n\n\n🀄\n\n\n\n\nNext Question →\nStart Interactive Quiz!\n\n\n\n\nFun fact: The 1 Bam is sometimes called the “Bird Bam” when it is discarded, a tradition is to all “cheers” 🥂"
-  },
-  {
-    "objectID": "posts/1-setup/index.html",
-    "href": "posts/1-setup/index.html",
-    "title": "Setup and Seating",
-    "section": "",
-    "text": "Four players sit around a square table. Each player represents a wind direction:"
-  },
-  {
-    "objectID": "posts/1-setup/index.html#what-you-need",
-    "href": "posts/1-setup/index.html#what-you-need",
-    "title": "Setup and Seating",
-    "section": "What you need",
-    "text": "What you need\n\nAmerican Mahjong set (152 tiles)\nOfficial card with current year’s hands. You can purchase the official card from the National Mah Jongg League\nTwo dice\nIf you are keeping score, scoring chips or paper"
-  },
-  {
-    "objectID": "posts/4-dealing/index.html",
-    "href": "posts/4-dealing/index.html",
-    "title": "Learn to Deal",
-    "section": "",
-    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below.\n\nRoll the dice to break the wall (this is like cutting the deck in cards). You break the wall by counting the number you rolled from the right side of your wall. These tiles are left behind, you then “push” your remaining tiles in your wall forward and deal from those.\nEast takes the first tiles and then continue counter-clockwise. Each player takes two stacks of tiles (4 titles total) until all players have 12 tiles\nAfter the final player (North) has 12 tiles, East takes the first and third tile from the top of the wall – they will now have 14 tiles. Then the remaining players each take 1 tile, they will each have 13 tiles.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRoll the dice to start dealing\n\n\n\n\n\n\n\n\nTotal: \n\n\nRoll Dice\n\n\n\n\n\n\n0\n\n\nTiles Dealt\n\n\n\n\nYou\n\n\nNext Deal Goes To\n\n\n\n\n\nReset Game\n\n\nShow Hint\n\n\n\n\n🎉 Perfect Deal!\n\n\nYou’ve successfully dealt all tiles correctly!\n\n\nEach player has the right number of tiles.\n\n\nPractice Again"
-  },
-  {
-    "objectID": "posts/3-building-the-wall/index.html",
-    "href": "posts/3-building-the-wall/index.html",
-    "title": "Building the Wall",
-    "section": "",
-    "text": "At the start of the game all 152 tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:\n\n19 tiles across - placed end to end in a line\n\n2 tiles high - each stack is two tiles tall\n\n38 tiles total per wall (19 × 2)\n\nAll tiles are placed face down so no one can see what they are.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n38\n\n\nTiles Remaining\n\n\n\n\n0\n\n\nStacks Built\n\n\n\n\n0\n\n\nTiles Placed\n\n\n\n\n19\n\n\nStacks Needed\n\n\n\n\n\nReset Game\n\n\nShow Hint\n\n\nAuto Complete\n\n\n\n\n\n🎉 Perfect!\n\n\nYou’ve successfully built your wall!\n\n\nYour wall has exactly 19 stacks of 2 tiles = 38 tiles total\n\n\nIn American Mahjong, each player builds and keeps their own wall during the game.\n\n\nPractice Again"
+    "text": "Examples\nThe suits look different depending on the set you are playing with, but here are some common ones:\n\n\n\nTraditional Tile Set\n\n\n\nThe Mahjong Line\n\n\n\nMy Fair Mahjong\nThere are lots of cute variations available for Mahjong sets. Here is a Southeast Series from My Fair Mahjong. If you are playing with a set you are not familiar with, you can ask to see the included card that will tell you which design represent which tiles.\n\n\n\n\n\n\n\n← Previous\n\n\nNext →\n\n\n\n\nQuick Knowledge Check\nCan you identify what type each tile is? Run through these as many times as you'd like to get to know some common tiles.\n\n\n\nReady to start?\n\n\n🀄\n\n\n\n\nNext Question →\nStart Interactive Quiz!\n\n\n\n\nFun fact: The 1 Bam is sometimes called the “Bird Bam” when it is discarded, a tradition is to all “cheers” 🥂\n\nNext Lesson"
   }
 ]

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Setup and Seating – How to Mahjong</title>
+<title>Building the Wall – How to Mahjong</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -101,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Setup and Seating</h1>
+<h1 class="title">Building the Wall</h1>
 </div>
 
 
@@ -118,41 +118,101 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Four players sit around a square table. Each place represents a wind direction:</p>
+<p>At the start of the game all <strong>152</strong> tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:</p>
 <ul>
-<li><strong>East</strong></li>
-<li><strong>South</strong></li>
-<li><strong>West</strong></li>
-<li><strong>North</strong></li>
+<li><strong>19 tiles across</strong> - placed end to end in a line<br>
+</li>
+<li><strong>2 tiles high</strong> - each stack is two tiles tall<br>
+</li>
+<li><strong>38 tiles total</strong> per wall (19 × 2)</li>
 </ul>
-<div class="table-container">
-<div class="mahjong-table">
-<div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: white; font-weight: bold;">
-WEST
+<p>All tiles are placed <strong>face down</strong> so no one can see what they are.</p>
+<div class="container">
+<div id="gameBoard" class="game-board">
+<div id="leftWall" class="wall-area left built-wall" data-wall="Left">
+
 </div>
-<div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-weight: bold;">
-SOUTH
+<div id="rightWall" class="wall-area right built-wall" data-wall="Right">
+
 </div>
-<div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: white; font-weight: bold;">
-EAST
+<div id="topWall" class="wall-area top built-wall" data-wall="Across">
+
 </div>
-<div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: white; font-weight: bold;">
-NORTH
+<div id="bottomWall" class="wall-area bottom player-wall" data-wall="Your">
+
+</div>
+<div id="tileCenter" class="tile-center">
+
+</div>
+</div>
+<center>
+<div class="stats">
+<div class="stat-box">
+<div id="tilesRemaining" class="stat-number">
+38
+</div>
+<div>
+Tiles Remaining
+</div>
+</div>
+<div class="stat-box">
+<div id="stacksBuilt" class="stat-number">
+0
+</div>
+<div>
+Stacks Built
+</div>
+</div>
+<div class="stat-box">
+<div id="tilesPlaced" class="stat-number">
+0
+</div>
+<div>
+Tiles Placed
+</div>
+</div>
+<div class="stat-box">
+<div class="stat-number">
+19
+</div>
+<div>
+Stacks Needed
 </div>
 </div>
 </div>
-<section id="what-you-need" class="level2">
-<h2 class="anchored" data-anchor-id="what-you-need">What you need</h2>
-<ul>
-<li>American Mahjong set (152 tiles)</li>
-<li>Official card with current year’s hands. You can purchase the official card from the <a href="https://www.nationalmahjonggleague.org/store.aspx#">National Mah Jongg League</a></li>
-<li>Two dice</li>
-<li>If you are keeping score, scoring chips or paper</li>
-</ul>
-<p><a href="../../posts/2-tiles" class="button">Next Lesson</a></p>
+<div class="controls">
+<button onclick="game.reset()">
+Reset Game
+</button>
+<button onclick="game.showHint()">
+Show Hint
+</button>
+<button onclick="game.autoComplete()">
+Auto Complete
+</button>
+</div>
+</center>
+<div id="completionMessage" class="completion-message">
+<h2 class="anchored">
+🎉 Perfect!
+</h2>
+<p>
+You’ve successfully built your wall!
+</p>
+<p>
+Your wall has exactly <strong>19 stacks of 2 tiles</strong> = <strong>38 tiles total</strong>
+</p>
+<p>
+In American Mahjong, each player builds and keeps their own wall during the game.
+</p>
+<button onclick="game.reset()">
+Practice Again
+</button>
+</div>
+</div>
+<p><a href="../../posts/4-dealing" class="button">Next Lesson</a></p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -568,6 +628,245 @@ NORTH
     </div>
   </div>
 </footer>
+<script src="../../assets/js/MahjongUtils.js"></script>
+<script>
+class MahjongWallGame {
+    constructor() {
+        this.totalTiles = 38; // Only tiles for player's wall
+        this.tilesPerWall = 38;
+        this.stacksPerWall = 19;
+        this.tilesPlaced = 0;
+        this.stacksBuilt = 0;
+        this.wallPositions = Array(19).fill(0); // Track tiles in each stack position
+        
+        // Bind handlers for drag and drop
+        this.dragHandlers = {
+            dragStart: this.handleDragStart.bind(this),
+            dragOver: this.handleDragOver.bind(this),
+            drop: this.handleDrop.bind(this),
+            dragEnd: this.handleDragEnd.bind(this)
+        };
+        
+        this.init();
+    }
+
+    init() {
+        this.createBuiltWalls();
+        this.createTiles();
+        this.setupEventListeners();
+        this.updateStats();
+    }
+
+    createBuiltWalls() {
+        const walls = [
+            { id: 'leftWall', index: 0 },
+            { id: 'rightWall', index: 2 }, 
+            { id: 'topWall', index: 1 }
+        ];
+        
+        walls.forEach(wall => {
+            MahjongUtils.createWall(wall.id, wall.index, 38, true);
+        });
+    }
+
+    createTiles() {
+        const tileCenter = document.getElementById('tileCenter');
+        tileCenter.innerHTML = '';
+        
+        for (let i = 0; i < this.totalTiles; i++) {
+            const tile = MahjongUtils.createTile(i.toString(), null, true);
+            
+            // Position tiles randomly in the center area
+            const position = MahjongUtils.getRandomPosition(340, 250);
+            tile.style.left = position.x + 'px';
+            tile.style.top = position.y + 'px';
+            
+            tileCenter.appendChild(tile);
+        }
+    }
+
+    setupEventListeners() {
+        MahjongUtils.setupDragAndDrop(this.dragHandlers);
+    }
+
+    handleDragStart(e) {
+        if (e.target.classList.contains('mahjong-tile') && !e.target.classList.contains('placed')) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', e.target.dataset.tileId);
+        }
+    }
+
+    handleDragOver(e) {
+        if (e.target.id === 'bottomWall') {
+            e.preventDefault();
+            e.target.classList.add('drag-over');
+        }
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        if (e.target.id === 'bottomWall') {
+            e.target.classList.remove('drag-over');
+            const tileId = e.dataTransfer.getData('text/plain');
+            const tile = document.querySelector(`[data-tile-id="${tileId}"]`);
+            
+            if (this.tilesPlaced < this.tilesPerWall) {
+                this.placeTileInWall(tile, e.target, e);
+            }
+        }
+    }
+
+    handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        document.getElementById('bottomWall').classList.remove('drag-over');
+    }
+
+    placeTileInWall(tile, wallArea, dropEvent) {
+        // Find the first available stack position
+        let stackIndex = this.findNextStackPosition();
+        
+        // If no available positions, return
+        if (stackIndex === -1) {
+            return;
+        }
+
+        const isTopTile = this.wallPositions[stackIndex] === 1;
+        const x = 10 + (stackIndex * 30); // Position within the wall
+        const y = isTopTile ? 10 : 30; // Stack vertically within the wall
+
+        // Move the tile to the wall area and position it correctly
+        wallArea.appendChild(tile);
+        tile.style.position = 'absolute';
+        tile.style.left = x + 'px';
+        tile.style.top = y + 'px';
+        tile.classList.add('placed');
+        tile.draggable = false;
+
+        if (isTopTile) {
+            tile.classList.add('stacked');
+        }
+
+        this.wallPositions[stackIndex]++;
+        this.tilesPlaced++;
+
+        // Update stacks built count
+        this.stacksBuilt = this.wallPositions.filter(count => count === 2).length;
+        this.updateStats();
+        this.checkCompletion();
+    }
+
+    findNextStackPosition() {
+        // First try to find a stack with only 1 tile (to complete it)
+        for (let i = 0; i < 19; i++) {
+            if (this.wallPositions[i] === 1) {
+                return i;
+            }
+        }
+
+        // If no incomplete stacks, find the first empty stack
+        for (let i = 0; i < 19; i++) {
+            if (this.wallPositions[i] === 0) {
+                return i;
+            }
+        }
+
+        return -1; // No available positions
+    }
+
+    updateStats() {
+        const remaining = this.totalTiles - this.tilesPlaced;
+        
+        MahjongUtils.updateStats({
+            'tilesRemaining': remaining,
+            'stacksBuilt': this.stacksBuilt,
+            'tilesPlaced': this.tilesPlaced
+        });
+    }
+
+    checkCompletion() {
+        if (this.tilesPlaced === this.tilesPerWall) {
+            MahjongUtils.showCompletion('completionMessage');
+        }
+    }
+
+    showHint() {
+        const hints = [
+            `You need exactly ${this.tilesPerWall} tiles to build your wall (${this.stacksPerWall} stacks × 2 tiles high)`,
+            "Drag tiles to different positions along your wall to create stacks",
+            "Each stack needs exactly 2 tiles - one on bottom, one on top",
+            `Stacks completed: ${this.stacksBuilt}/${this.stacksPerWall}`,
+            `Tiles placed: ${this.tilesPlaced}/${this.tilesPerWall}`,
+            "Try to spread tiles evenly across all 19 stack positions",
+            "Drop tiles anywhere in 'Your Wall' and they'll find the next available spot!"
+        ];
+
+        const randomHint = hints[Math.floor(Math.random() * hints.length)];
+        MahjongUtils.showHint(randomHint);
+    }
+
+    autoComplete() {
+        // Get all remaining tiles from the center
+        const remainingTiles = document.querySelectorAll('#tileCenter .mahjong-tile');
+
+        // Place tiles systematically
+        remainingTiles.forEach(tile => {
+            if (this.tilesPlaced < this.tilesPerWall) {
+                const stackIndex = this.findNextStackPosition();
+
+                // Place the tile if we found a position
+                if (stackIndex !== -1) {
+                    const wallArea = document.getElementById('bottomWall');
+                    const isTopTile = this.wallPositions[stackIndex] === 1;
+
+                    // Position the tile
+                    const x = 10 + (stackIndex * 30);
+                    const y = isTopTile ? 10 : 30;
+
+                    wallArea.appendChild(tile);
+                    tile.style.position = 'absolute';
+                    tile.style.left = x + 'px';
+                    tile.style.top = y + 'px';
+                    tile.classList.add('placed');
+                    tile.draggable = false;
+
+                    if (isTopTile) {
+                        tile.classList.add('stacked');
+                    }
+
+                    this.wallPositions[stackIndex]++;
+                    this.tilesPlaced++;
+                }
+            }
+        });
+
+        // Update stats and check completion
+        this.stacksBuilt = this.wallPositions.filter(count => count === 2).length;
+        this.updateStats();
+        this.checkCompletion();
+    }
+
+    reset() {
+        // Remove all existing event listeners to prevent duplicates
+        MahjongUtils.removeDragAndDrop(this.dragHandlers);
+
+        // Reset all game state
+        this.tilesPlaced = 0;
+        this.stacksBuilt = 0;
+        this.wallPositions = Array(19).fill(0);
+        document.getElementById('completionMessage').style.display = 'none';
+
+        // Clear the bottom wall of any placed tiles
+        const bottomWall = document.getElementById('bottomWall');
+        bottomWall.innerHTML = '';
+
+        // Completely reinitialize
+        this.init();
+    }
+}
+
+// Initialize the game when the page loads
+const game = new MahjongWallGame();
+</script>
 
 
 

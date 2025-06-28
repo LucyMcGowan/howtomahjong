@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Learn to Deal – How to Mahjong</title>
+<title>Learn the Deal – How to Mahjong</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-ef0226c65aadaf9c0895e50d41737a7b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-b4289653cc67b0f74a16663843038c29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -101,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Learn to Deal</h1>
+<h1 class="title">Learn the Deal</h1>
 </div>
 
 
@@ -121,8 +121,8 @@ ul.task-list li input[type="checkbox"] {
 <p>We begin by determining <strong>who is East</strong> by rolling the dice. The tiles are dealt from <strong>East</strong>’s wall first. This will rotate each round.</p>
 <p>Read through these steps for how the deal works, then try it yourself in the interactive game below.</p>
 <ol type="1">
-<li>Roll the dice to <strong>break the wall</strong> (this is like cutting the deck in cards). You break the wall by counting the number you rolled from the right side of your wall. These tiles are left behind, you then “push” your remaining tiles in your wall forward and deal from those.</li>
-<li><strong>East takes the first tiles</strong> and then continue <strong>counter-clockwise</strong>. Each player takes two stacks of tiles (4 titles total) until all players have <strong>12 tiles</strong></li>
+<li><strong>East</strong> will roll the dice to <strong>break the wall</strong> (this is like cutting the deck in cards). You break the wall by counting the number rolled from the right side of the wall. These tiles are left behind, you then “push” the remaining tiles in wall forward and deal from those.</li>
+<li><strong>East takes the first tiles</strong> and then the deal continues <strong>counter-clockwise</strong>. Each player takes two stacks of tiles (4 titles total) until all players have <strong>12 tiles</strong></li>
 <li>After the final player (<strong>North</strong>) has 12 tiles, <strong>East</strong> takes the first and third tile from the top of the wall – they will now have <strong>14 tiles</strong>. Then the remaining players each take <strong>1 tile</strong>, they will each have <strong>13 tiles</strong>.</li>
 </ol>
 <div id="gameBoard" class="game-board">
@@ -799,19 +799,30 @@ class MahjongDealingGame {
         }
     }
 
-    makeNextTilesAvailableForDealer() {
-        const wall = this.wallTiles[this.currentWallIndex];
-        let startIndex = this.dealingStartIndex;
-        
-        for (let i = 0; i < 2 && startIndex - i >= 0; i++) {
-            const tile = wall[startIndex - i];
-            if (tile && !tile.classList.contains('placed')) {
-                tile.classList.add('available');
-                tile.draggable = true;
-                this.availableTiles.push(tile);
-            }
+makeNextTilesAvailableForDealer() {
+    const wall = this.wallTiles[this.currentWallIndex];
+    let startIndex = this.dealingStartIndex;
+    
+    // Make the next tile available (index 0)
+    if (startIndex >= 0) {
+        const nextTile = wall[startIndex];
+        if (nextTile && !nextTile.classList.contains('placed')) {
+            nextTile.classList.add('available');
+            nextTile.draggable = true;
+            this.availableTiles.push(nextTile);
         }
     }
+    
+    // Make the third tile available (index 2)
+    if (startIndex - 4 >= 0) {
+        const thirdTile = wall[startIndex - 4];
+        if (thirdTile && !thirdTile.classList.contains('placed')) {
+            thirdTile.classList.add('available');
+            thirdTile.draggable = true;
+            this.availableTiles.push(thirdTile);
+        }
+    }
+}
 
     makeNextSingleTileAvailable() {
         const wall = this.wallTiles[this.currentWallIndex];
