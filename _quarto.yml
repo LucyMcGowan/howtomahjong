@@ -1,0 +1,22 @@
+project:
+  type: website
+  output-dir: docs
+  resources:
+    - "**/*.png"
+    - "/assets"
+
+website:
+  title: "How to Mahjong"
+  description: "Bite-sized mahjong lessons"
+  navbar:
+    logo: logo.png
+    title: "How to Mahjong"
+
+  page-footer:
+    center: "Lucy D'Agostino McGowan © 2025"
+
+format:
+  html:
+    theme: 
+      - styles.scss
+    toc: false
