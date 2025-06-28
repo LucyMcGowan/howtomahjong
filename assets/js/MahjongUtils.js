@@ -1,5 +1,4 @@
-// MahjongUtils.js - Common utility functions for Mahjong games
-
+// MahjongUtils.js - Common utility functions for Mahjong games with mobile support
 class MahjongUtils {
     /**
      * Creates a mahjong tile element with standard properties
@@ -14,6 +13,10 @@ class MahjongUtils {
         tile.className = `mahjong-tile ${additionalClasses}`.trim();
         tile.draggable = draggable;
         tile.dataset.tileId = tileId;
+        
+        // Add touch-action CSS for better mobile handling
+        tile.style.touchAction = 'none';
+        tile.style.userSelect = 'none';
         
         if (wallIndex !== null) {
             tile.dataset.wallIndex = wallIndex;
@@ -115,30 +118,275 @@ class MahjongUtils {
     }
 
     /**
-     * Sets up standard drag and drop event listeners
+     * Gets the coordinates from either a mouse or touch event
+     * @param {Event} event - Mouse or touch event
+     * @returns {Object} Object with clientX and clientY coordinates
+     */
+    static getEventCoordinates(event) {
+        if (event.touches && event.touches.length > 0) {
+            return {
+                clientX: event.touches[0].clientX,
+                clientY: event.touches[0].clientY
+            };
+        } else if (event.changedTouches && event.changedTouches.length > 0) {
+            return {
+                clientX: event.changedTouches[0].clientX,
+                clientY: event.changedTouches[0].clientY
+            };
+        }
+        return {
+            clientX: event.clientX,
+            clientY: event.clientY
+        };
+    }
+
+    /**
+     * Gets the element at the given coordinates, accounting for touch events
+     * @param {number} x - X coordinate
+     * @param {number} y - Y coordinate
+     * @param {HTMLElement} excludeElement - Element to exclude from search
+     * @returns {HTMLElement} Element at the coordinates
+     */
+    static getElementFromPoint(x, y, excludeElement = null) {
+        if (excludeElement) {
+            const originalDisplay = excludeElement.style.display;
+            excludeElement.style.display = 'none';
+            const element = document.elementFromPoint(x, y);
+            excludeElement.style.display = originalDisplay;
+            return element;
+        }
+        return document.elementFromPoint(x, y);
+    }
+
+    /**
+     * Sets up unified drag and drop / touch event listeners for mobile and desktop
      * @param {Object} handlers - Object containing handler functions
-     * @param {Function} handlers.dragStart - Drag start handler
-     * @param {Function} handlers.dragOver - Drag over handler
+     * @param {Function} handlers.dragStart - Drag/touch start handler
+     * @param {Function} handlers.dragOver - Drag over / touch move handler
      * @param {Function} handlers.dragLeave - Drag leave handler (optional)
-     * @param {Function} handlers.drop - Drop handler
+     * @param {Function} handlers.drop - Drop / touch end handler
      * @param {Function} handlers.dragEnd - Drag end handler (optional)
      */
     static setupDragAndDrop(handlers) {
+        let isDragging = false;
+        let draggedElement = null;
+        let currentDropTarget = null;
+
+        // Enhanced drag start handler that works with both mouse and touch
+        const unifiedDragStart = (event) => {
+            // Handle both mouse drag start and touch start
+            if (event.type === 'dragstart' || event.type === 'touchstart') {
+                
+                // For touch events, we need to identify the dragged element
+                if (event.type === 'touchstart') {
+                    const coords = this.getEventCoordinates(event);
+                    draggedElement = this.getElementFromPoint(coords.clientX, coords.clientY);
+                    
+                    // Check if the touched element is draggable or a tile
+                    const isDraggableElement = draggedElement && (
+                        draggedElement.draggable === true ||
+                        draggedElement.classList.contains('mahjong-tile') ||
+                        draggedElement.dataset.tileId
+                    );
+                    
+                    // Check if it's a button or other interactive element that shouldn't be dragged
+                    const isClickableElement = draggedElement && (
+                        draggedElement.tagName === 'BUTTON' ||
+                        draggedElement.tagName === 'A' ||
+                        draggedElement.tagName === 'INPUT' ||
+                        draggedElement.type === 'button' ||
+                        draggedElement.type === 'submit' ||
+                        draggedElement.role === 'button' ||
+                        draggedElement.classList.contains('btn') ||
+                        draggedElement.classList.contains('button')
+                    );
+                    
+                    // If it's a clickable element, don't start dragging
+                    if (isClickableElement || !isDraggableElement) {
+                        isDragging = false;
+                        return;
+                    }
+                    
+                    isDragging = true;
+                    
+                    // Create a synthetic drag start event for touch
+                    const syntheticEvent = {
+                        ...event,
+                        type: 'dragstart',
+                        target: draggedElement,
+                        dataTransfer: {
+                            setData: (type, data) => {
+                                // Store the data for later retrieval
+                                if (!syntheticEvent._dragData) {
+                                    syntheticEvent._dragData = {};
+                                }
+                                syntheticEvent._dragData[type] = data;
+                            },
+                            getData: (type) => {
+                                return syntheticEvent._dragData ? syntheticEvent._dragData[type] : null;
+                            }
+                        }
+                    };
+                    
+                    // Prevent default touch behaviors only for draggable elements
+                    event.preventDefault();
+                    
+                    if (handlers.dragStart) {
+                        handlers.dragStart(syntheticEvent);
+                    }
+                } else {
+                    isDragging = true;
+                    draggedElement = event.target;
+                    if (handlers.dragStart) {
+                        handlers.dragStart(event);
+                    }
+                }
+            }
+        };
+
+        // Enhanced drag over handler for touch move
+        const unifiedDragOver = (event) => {
+            if (event.type === 'dragover' || (event.type === 'touchmove' && isDragging)) {
+                event.preventDefault();
+                
+                if (event.type === 'touchmove') {
+                    const coords = this.getEventCoordinates(event);
+                    const elementBelow = this.getElementFromPoint(coords.clientX, coords.clientY, draggedElement);
+                    
+                    // Simulate dragover for the element below
+                    if (elementBelow && elementBelow !== currentDropTarget) {
+                        if (currentDropTarget && handlers.dragLeave) {
+                            const leaveEvent = {
+                                type: 'dragleave',
+                                target: currentDropTarget
+                            };
+                            handlers.dragLeave(leaveEvent);
+                        }
+                        
+                        currentDropTarget = elementBelow;
+                        const overEvent = {
+                            type: 'dragover',
+                            target: elementBelow,
+                            clientX: coords.clientX,
+                            clientY: coords.clientY,
+                            preventDefault: () => {}
+                        };
+                        
+                        if (handlers.dragOver) {
+                            handlers.dragOver(overEvent);
+                        }
+                    }
+                } else if (handlers.dragOver) {
+                    handlers.dragOver(event);
+                }
+            }
+        };
+
+        // Enhanced drop handler for touch end
+        const unifiedDrop = (event) => {
+            if (event.type === 'drop' || (event.type === 'touchend' && isDragging)) {
+                event.preventDefault();
+                
+                if (event.type === 'touchend') {
+                    const coords = this.getEventCoordinates(event);
+                    const dropTarget = this.getElementFromPoint(coords.clientX, coords.clientY, draggedElement);
+                    
+                    if (dropTarget) {
+                        const dropEvent = {
+                            type: 'drop',
+                            target: dropTarget,
+                            clientX: coords.clientX,
+                            clientY: coords.clientY,
+                            preventDefault: () => {},
+                            dataTransfer: {
+                                getData: (type) => {
+                                    // Return the tile ID for the dragged element
+                                    if (type === 'text/plain' && draggedElement) {
+                                        return draggedElement.dataset.tileId || null;
+                                    }
+                                    return null;
+                                }
+                            }
+                        };
+                        
+                        if (handlers.drop) {
+                            handlers.drop(dropEvent);
+                        }
+                    }
+                } else if (handlers.drop) {
+                    handlers.drop(event);
+                }
+
+                // Reset drag state
+                isDragging = false;
+                draggedElement = null;
+                currentDropTarget = null;
+            }
+        };
+
+        // Enhanced drag end handler
+        const unifiedDragEnd = (event) => {
+            if (event.type === 'dragend' || event.type === 'touchend') {
+                isDragging = false;
+                draggedElement = null;
+                currentDropTarget = null;
+                
+                if (handlers.dragEnd) {
+                    const syntheticEvent = event.type === 'touchend' ? {
+                        type: 'dragend',
+                        target: draggedElement
+                    } : event;
+                    handlers.dragEnd(syntheticEvent);
+                }
+            }
+        };
+
+        // Add mouse event listeners
         if (handlers.dragStart) {
-            document.addEventListener('dragstart', handlers.dragStart);
+            document.addEventListener('dragstart', unifiedDragStart);
         }
         if (handlers.dragOver) {
-            document.addEventListener('dragover', handlers.dragOver);
+            document.addEventListener('dragover', unifiedDragOver);
         }
         if (handlers.dragLeave) {
             document.addEventListener('dragleave', handlers.dragLeave);
         }
         if (handlers.drop) {
-            document.addEventListener('drop', handlers.drop);
+            document.addEventListener('drop', unifiedDrop);
         }
         if (handlers.dragEnd) {
-            document.addEventListener('dragend', handlers.dragEnd);
+            document.addEventListener('dragend', unifiedDragEnd);
         }
+
+        // Add touch event listeners with better event filtering
+        const touchStartHandler = (event) => {
+            // Only process touch events on draggable elements
+            const target = event.target;
+            const isDraggableElement = target && (
+                target.draggable === true ||
+                target.classList.contains('mahjong-tile') ||
+                target.dataset.tileId
+            );
+            
+            if (isDraggableElement) {
+                unifiedDragStart(event);
+            }
+        };
+        
+        document.addEventListener('touchstart', touchStartHandler, { passive: false });
+        document.addEventListener('touchmove', unifiedDragOver, { passive: false });
+        document.addEventListener('touchend', unifiedDrop, { passive: false });
+        document.addEventListener('touchend', unifiedDragEnd, { passive: false });
+
+        // Store references for cleanup
+        this._dragHandlers = {
+            unifiedDragStart,
+            unifiedDragOver,
+            unifiedDrop,
+            unifiedDragEnd,
+            touchStartHandler,
+            originalHandlers: handlers
+        };
     }
 
     /**
@@ -146,20 +394,33 @@ class MahjongUtils {
      * @param {Object} handlers - Object containing handler functions to remove
      */
     static removeDragAndDrop(handlers) {
-        if (handlers.dragStart) {
-            document.removeEventListener('dragstart', handlers.dragStart);
-        }
-        if (handlers.dragOver) {
-            document.removeEventListener('dragover', handlers.dragOver);
-        }
-        if (handlers.dragLeave) {
-            document.removeEventListener('dragleave', handlers.dragLeave);
-        }
-        if (handlers.drop) {
-            document.removeEventListener('drop', handlers.drop);
-        }
-        if (handlers.dragEnd) {
-            document.removeEventListener('dragend', handlers.dragEnd);
+        if (this._dragHandlers) {
+            const { unifiedDragStart, unifiedDragOver, unifiedDrop, unifiedDragEnd, touchStartHandler, originalHandlers } = this._dragHandlers;
+            
+            // Remove mouse event listeners
+            if (originalHandlers.dragStart) {
+                document.removeEventListener('dragstart', unifiedDragStart);
+            }
+            if (originalHandlers.dragOver) {
+                document.removeEventListener('dragover', unifiedDragOver);
+            }
+            if (originalHandlers.dragLeave) {
+                document.removeEventListener('dragleave', originalHandlers.dragLeave);
+            }
+            if (originalHandlers.drop) {
+                document.removeEventListener('drop', unifiedDrop);
+            }
+            if (originalHandlers.dragEnd) {
+                document.removeEventListener('dragend', unifiedDragEnd);
+            }
+
+            // Remove touch event listeners
+            document.removeEventListener('touchstart', touchStartHandler);
+            document.removeEventListener('touchmove', unifiedDragOver);
+            document.removeEventListener('touchend', unifiedDrop);
+            document.removeEventListener('touchend', unifiedDragEnd);
+
+            delete this._dragHandlers;
         }
     }
 
