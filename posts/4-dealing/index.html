@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-b4289653cc67b0f74a16663843038c29.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-652440a68968e8384c9d2c9584eb27f6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -627,7 +627,6 @@ Practice Again
   </div>
 </footer>
 <script src="../../assets/js/MahjongUtils.js"></script>
-
 <script>
 class MahjongDealingGame {
     constructor() {
@@ -647,6 +646,7 @@ class MahjongDealingGame {
         this.tilesInFrontOfDealer = 0;
         this.initialDealComplete = false;
         this.finalDealPhase = false;
+        this.leftWallMoved = false; // Track if left wall has been moved
         
         // Store bound handlers for event management
         this.boundHandlers = {};
@@ -769,6 +769,22 @@ class MahjongDealingGame {
         this.currentWallIndex = 3;
     }
 
+    // NEW METHOD: Move left wall tiles to create dealing pile
+    moveLeftWallForDealing() {
+        if (this.leftWallMoved) return;
+        
+        const leftWall = this.wallTiles[0];
+        
+        for (let i = 0; i < leftWall.length; i++) {
+            const tile = leftWall[i];
+            const currentLeft = parseInt(tile.style.left);
+            tile.style.left = (currentLeft + 40) + 'px';
+            tile.classList.add('dealing-pile');
+        }
+        
+        this.leftWallMoved = true;
+    }
+
     makeNextTilesAvailable() {
         this.availableTiles.forEach(tile => {
             tile.classList.remove('available');
@@ -799,30 +815,30 @@ class MahjongDealingGame {
         }
     }
 
-makeNextTilesAvailableForDealer() {
-    const wall = this.wallTiles[this.currentWallIndex];
-    let startIndex = this.dealingStartIndex;
-    
-    // Make the next tile available (index 0)
-    if (startIndex >= 0) {
-        const nextTile = wall[startIndex];
-        if (nextTile && !nextTile.classList.contains('placed')) {
-            nextTile.classList.add('available');
-            nextTile.draggable = true;
-            this.availableTiles.push(nextTile);
+    makeNextTilesAvailableForDealer() {
+        const wall = this.wallTiles[this.currentWallIndex];
+        let startIndex = this.dealingStartIndex;
+        
+        // Make the next tile available (index 0)
+        if (startIndex >= 0) {
+            const nextTile = wall[startIndex];
+            if (nextTile && !nextTile.classList.contains('placed')) {
+                nextTile.classList.add('available');
+                nextTile.draggable = true;
+                this.availableTiles.push(nextTile);
+            }
+        }
+        
+        // Make the third tile available (index 2)
+        if (startIndex - 4 >= 0) {
+            const thirdTile = wall[startIndex - 4];
+            if (thirdTile && !thirdTile.classList.contains('placed')) {
+                thirdTile.classList.add('available');
+                thirdTile.draggable = true;
+                this.availableTiles.push(thirdTile);
+            }
         }
     }
-    
-    // Make the third tile available (index 2)
-    if (startIndex - 4 >= 0) {
-        const thirdTile = wall[startIndex - 4];
-        if (thirdTile && !thirdTile.classList.contains('placed')) {
-            thirdTile.classList.add('available');
-            thirdTile.draggable = true;
-            this.availableTiles.push(thirdTile);
-        }
-    }
-}
 
     makeNextSingleTileAvailable() {
         const wall = this.wallTiles[this.currentWallIndex];
@@ -921,6 +937,8 @@ makeNextTilesAvailableForDealer() {
         if (this.currentWallIndex === 3 && this.dealingStartIndex < 0) {
             this.currentWallIndex = 0;
             this.dealingStartIndex = this.wallTiles[0].length - 1;
+            // NEW: Move left wall tiles when we start dealing from it
+            this.moveLeftWallForDealing();
         } else if (this.dealingStartIndex < 0) {
             this.currentWallIndex = (this.currentWallIndex + 1) % 4;
             this.dealingStartIndex = this.wallTiles[this.currentWallIndex].length - 1;
@@ -982,9 +1000,9 @@ makeNextTilesAvailableForDealer() {
         
         // Update player area labels
         const playerElements = [
-            {id: 'playerLeft', name: 'North', count: this.playerTileCounts[0]},
+            {id: 'playerLeft', name: 'North', count: this.playerTileCounts[2]},
             {id: 'playerTop', name: 'West', count: this.playerTileCounts[1]},
-            {id: 'playerRight', name: 'South', count: this.playerTileCounts[2]},
+            {id: 'playerRight', name: 'South', count: this.playerTileCounts[0]},
             {id: 'playerYou', name: 'East', count: this.playerTileCounts[3]}
         ];
         
