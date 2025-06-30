@@ -4,21 +4,21 @@
     "href": "index.html",
     "title": "How to Mahjong",
     "section": "",
-    "text": "Learn how to play Mahjong in just 9 easy lessons\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSetup and Seating\n\n\n\n\n\n\n\n\n\n\n\n\nGet to know the tiles\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding the Wall\n\n\n\n\n\n\n\n\n\n\n\n\nLearn the Deal\n\n\n\n\n\nNo matching items"
+    "text": "Learn how to play Mahjong in just 9 easy lessons\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSetup and Seating\n\n\n\n\n\n\n\n\n\n\n\n\nGet to know the tiles\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding the Wall\n\n\n\n\n\n\n\n\n\n\n\n\nLearn the Deal\n\n\n\n\n\n\n\n\n\n\n\n\nThe Charleston\n\n\n\n\n\nNo matching items"
   },
   {
-    "objectID": "posts/4-dealing/index.html",
-    "href": "posts/4-dealing/index.html",
-    "title": "Learn the Deal",
+    "objectID": "posts/2-tiles/index.html",
+    "href": "posts/2-tiles/index.html",
+    "title": "Get to know the tiles",
     "section": "",
-    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below.\n\nEast will roll the dice to break the wall (this is like cutting the deck in cards). You break the wall by counting the number rolled from the right side of the wall. These tiles are left behind, you then “push” the remaining tiles in wall forward and deal from those.\nEast takes the first tiles and then the deal continues counter-clockwise. Each player takes two stacks of tiles (4 titles total) until all players have 12 tiles\nAfter the final player (North) has 12 tiles, East takes the first and third tile from the top of the wall – they will now have 14 tiles. Then the remaining players each take 1 tile, they will each have 13 tiles.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nRoll the dice to start dealing\n\n\n\n\n\n\n\n\nTotal: \n\n\nRoll Dice\n\n\n\n\n\n\n0\n\n\nTiles Dealt\n\n\n\n\nYou\n\n\nNext Deal Goes To\n\n\n\n\n\nReset Game\n\n\nShow Hint\n\n\n\n\n🎉 Perfect Deal!\n\n\nYou’ve successfully dealt all tiles correctly!\n\n\nEach player has the right number of tiles.\n\n\nPractice Again"
+    "text": "Click through the flashcards below to learn about the different tiles, then scroll to the end of this page to test your knowledge!"
   },
   {
-    "objectID": "posts/3-wall/index.html",
-    "href": "posts/3-wall/index.html",
-    "title": "Building the Wall",
-    "section": "",
-    "text": "At the start of the game all 152 tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:\n\n19 tiles across - placed end to end in a line\n\n2 tiles high - each stack is two tiles tall\n\n38 tiles total per wall (19 × 2)\n\nAll tiles are placed face down so no one can see what they are.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n38\n\n\nTiles Remaining\n\n\n\n\n0\n\n\nStacks Built\n\n\n\n\n0\n\n\nTiles Placed\n\n\n\n\n19\n\n\nStacks Needed\n\n\n\n\n\nReset Game\n\n\nShow Hint\n\n\nAuto Complete\n\n\n\n\n\n🎉 Perfect!\n\n\nYou’ve successfully built your wall!\n\n\nYour wall has exactly 19 stacks of 2 tiles = 38 tiles total\n\n\nIn American Mahjong, each player builds and keeps their own wall during the game.\n\n\nPractice Again\n\n\n\nNext Lesson"
+    "objectID": "posts/2-tiles/index.html#examples",
+    "href": "posts/2-tiles/index.html#examples",
+    "title": "Get to know the tiles",
+    "section": "Examples",
+    "text": "Examples\nThe suits look different depending on the set you are playing with, but here are some common ones:\n\n\n\nTraditional Tile Set\n\n\n\nThe Mahjong Line\n\n\n\nMy Fair Mahjong\nThere are lots of cute variations available for Mahjong sets. Here is a Southeast Series from My Fair Mahjong. If you are playing with a set you are not familiar with, you can ask to see the included card that will tell you which design represent which tiles.\n\n\n\n\n\n\n\n← Previous\n\n\nNext →\n\n\n\n\nQuick Knowledge Check\nCan you identify what type each tile is? Run through these as many times as you'd like to get to know some common tiles.\n\n\n\nReady to start?\n\n\n🀄\n\n\n\n\nNext Question →\nStart Interactive Quiz!\n\n\n\n\nFun fact: The 1 Bam is sometimes called the “Bird Bam” when it is discarded, a tradition is to all “cheers” 🥂\n\nNext Lesson"
   },
   {
     "objectID": "posts/1-setup/index.html",
@@ -49,17 +49,45 @@
     "text": "Let’s Learn!\nReady to become a mahjong player? We’ve designed this guide to take you step-by-step through everything you need to know. Here’s what’s coming up:\n\nTiles - Understanding the symbols and suits\nBuilding the Walls - Setting up each game\nThe Deal - How tiles are distributed to players\nThe Charleston - The unique tile-passing that kicks off the gam\nPlaying the Game - Bringing it all together\n\nEach lesson builds on the previous one, so you’ll develop confidence naturally as you progress. By the end, you’ll be ready to join any mahjong table with the pros!\nNext Lesson"
   },
   {
-    "objectID": "posts/2-tiles/index.html",
-    "href": "posts/2-tiles/index.html",
-    "title": "Get to know the tiles",
+    "objectID": "posts/3-wall/index.html",
+    "href": "posts/3-wall/index.html",
+    "title": "Building the Wall",
     "section": "",
-    "text": "Click through the flashcards below to learn about the different tiles, then scroll to the end of this page to test your knowledge!"
+    "text": "At the start of the game all 152 tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:\nAll tiles are placed face down so no one can see what they are.\nNext Lesson"
   },
   {
-    "objectID": "posts/2-tiles/index.html#examples",
-    "href": "posts/2-tiles/index.html#examples",
-    "title": "Get to know the tiles",
-    "section": "Examples",
-    "text": "Examples\nThe suits look different depending on the set you are playing with, but here are some common ones:\n\n\n\nTraditional Tile Set\n\n\n\nThe Mahjong Line\n\n\n\nMy Fair Mahjong\nThere are lots of cute variations available for Mahjong sets. Here is a Southeast Series from My Fair Mahjong. If you are playing with a set you are not familiar with, you can ask to see the included card that will tell you which design represent which tiles.\n\n\n\n\n\n\n\n← Previous\n\n\nNext →\n\n\n\n\nQuick Knowledge Check\nCan you identify what type each tile is? Run through these as many times as you'd like to get to know some common tiles.\n\n\n\nReady to start?\n\n\n🀄\n\n\n\n\nNext Question →\nStart Interactive Quiz!\n\n\n\n\nFun fact: The 1 Bam is sometimes called the “Bird Bam” when it is discarded, a tradition is to all “cheers” 🥂\n\nNext Lesson"
+    "objectID": "posts/3-wall/index.html#perfect",
+    "href": "posts/3-wall/index.html#perfect",
+    "title": "Building the Wall",
+    "section": "🎉 Perfect!",
+    "text": "🎉 Perfect!\nYou’ve successfully built your wall!\nYour wall has exactly 19 stacks of 2 tiles = 38 tiles total\n\nPractice Again"
+  },
+  {
+    "objectID": "posts/4-dealing/index.html",
+    "href": "posts/4-dealing/index.html",
+    "title": "Learn the Deal",
+    "section": "",
+    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below."
+  },
+  {
+    "objectID": "posts/4-dealing/index.html#perfect-deal",
+    "href": "posts/4-dealing/index.html#perfect-deal",
+    "title": "Learn the Deal",
+    "section": "🎉 Perfect Deal!",
+    "text": "🎉 Perfect Deal!\nYou’ve successfully dealt all tiles correctly!\nEach player has the right number of tiles.\n\nPractice Again"
+  },
+  {
+    "objectID": "posts/5-charleston/index.html",
+    "href": "posts/5-charleston/index.html",
+    "title": "The Charleston",
+    "section": "",
+    "text": "Practice the Charleston:\nSelect 3 tiles to pass. First Charleston: Right → Across → Left (optional 2nd Left). Second Charleston: Left → Across → Right (optional 2nd Right). Blind passes can be made on the 2nd Left and 3rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nContinue\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Pass\n\n\nNew Game\n\n\nHelp"
+  },
+  {
+    "objectID": "posts/5-charleston/index.html#charleston-practice",
+    "href": "posts/5-charleston/index.html#charleston-practice",
+    "title": "The Charleston",
+    "section": "",
+    "text": "Practice the Charleston:\nSelect 3 tiles to pass. First Charleston: Right → Across → Left (optional 2nd Left). Second Charleston: Left → Across → Right (optional 2nd Right). Blind passes can be made on the 2nd Left and 3rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nContinue\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Pass\n\n\nNew Game\n\n\nHelp"
   }
 ]

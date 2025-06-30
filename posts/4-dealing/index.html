@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-652440a68968e8384c9d2c9584eb27f6.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-9849106e0dc7e71d131e6efcfe4909d4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -135,7 +135,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="topWall" class="wall-area top" data-wall="West Wall">
 
 </div>
-<div id="bottomWall" class="wall-area bottom active" data-wall="East Wall">
+<div id="bottomWall" class="wall-area bottom" data-wall="East Wall">
 
 </div>
 <div id="playerLeft" class="player-area player-left drop-zone" data-player="North (0)">
@@ -151,18 +151,14 @@ ul.task-list li input[type="checkbox"] {
 
 </div>
 <div id="diceArea" class="dice-area">
-<div>
-Roll the dice to start dealing
-</div>
+<p>Roll the dice to start dealing</p>
 <div id="dice1" class="dice">
 
 </div>
 <div id="dice2" class="dice">
 
 </div>
-<div>
-Total: <span id="diceTotal"></span>
-</div>
+<p>Total <span id="diceTotal"></span></p>
 <button onclick="game.rollDice()">
 Roll Dice
 </button>
@@ -171,22 +167,18 @@ Roll Dice
 <div class="stats">
 <div class="stat-box">
 <div id="tilesDealt" class="stat-number">
-0
+<p>0</p>
 </div>
-<div>
-Tiles Dealt
-</div>
+<p>Tiles Dealt</p>
 </div>
 <div class="stat-box">
 <div id="currentPlayer" class="stat-number">
-You
+<p>You</p>
 </div>
-<div>
-Next Deal Goes To
-</div>
+<p>Next Deal Goes To</p>
 </div>
 </div>
-<div style="text-align: center;">
+<div class="text-center">
 <button onclick="game.reset()">
 Reset Game
 </button>
@@ -195,24 +187,19 @@ Show Hint
 </button>
 </div>
 <div id="completionMessage" class="completion-message">
-<h2 class="anchored">
-🎉 Perfect Deal!
-</h2>
-<p>
-You’ve successfully dealt all tiles correctly!
-</p>
-<p>
-Each player has the right number of tiles.
-</p>
+<section id="perfect-deal" class="level2">
+<h2 class="anchored" data-anchor-id="perfect-deal">🎉 Perfect Deal!</h2>
+<p>You’ve successfully dealt all tiles correctly!<br>
+Each player has the right number of tiles.</p>
 <button onclick="game.reset()">
 Practice Again
 </button>
+</section>
 </div>
-</main></div>
 
 
 
- <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -612,7 +599,7 @@ Practice Again
     }
   });
   </script>
- <!-- /content -->
+</div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
@@ -829,7 +816,7 @@ class MahjongDealingGame {
             }
         }
         
-        // Make the third tile available (index 2)
+        // Make the third tile available
         if (startIndex - 4 >= 0) {
             const thirdTile = wall[startIndex - 4];
             if (thirdTile && !thirdTile.classList.contains('placed')) {
@@ -905,20 +892,47 @@ class MahjongDealingGame {
         return playerIds[this.currentPlayerIndex];
     }
 
-    placeTileCluster(playerArea) {
-        const tilesToDeal = this.availableTiles.length;
+placeTileCluster(playerArea) {
+    const tilesToDeal = this.availableTiles.length;
+            
+    // Create cluster using utility function
+    const cluster = MahjongUtils.createTileCluster(
+        tilesToDeal, 
+        this.currentPlayerIndex === 3, 
+        this.finalDealPhase
+    );
+            
+    playerArea.appendChild(cluster);
+            
+    // Remove tiles from wall
+    const wall = this.wallTiles[this.currentWallIndex];
+    
+    // Special handling for dealer's final deal (both 1st and 3rd tiles)
+    if (this.finalDealPhase && this.currentPlayerIndex === 3) {
+        // Remove the specific tiles that were made available
+        this.availableTiles.forEach(tile => {
+            const tileIndex = Array.from(wall).indexOf(tile);
+            if (tileIndex !== -1) {
+                wall[tileIndex].classList.add('placed');
+                wall[tileIndex].style.display = 'none';
+            }
+        });
         
-        // Create cluster using utility function
-        const cluster = MahjongUtils.createTileCluster(
-            tilesToDeal, 
-            this.currentPlayerIndex === 3, 
-            this.finalDealPhase
-        );
+        // Update dealing start index to continue from the next available tile
+        // Find the highest index that was removed
+        let maxRemovedIndex = -1;
+        this.availableTiles.forEach(tile => {
+            const tileIndex = Array.from(wall).indexOf(tile);
+            if (tileIndex > maxRemovedIndex) {
+                maxRemovedIndex = tileIndex;
+            }
+        });
         
-        playerArea.appendChild(cluster);
-        
-        // Remove tiles from wall
-        const wall = this.wallTiles[this.currentWallIndex];
+        // Set dealing start index to just before the highest removed tile
+        // This ensures we continue dealing from the next sequential tile
+        this.dealingStartIndex = maxRemovedIndex - 1;
+    } else {
+        // Normal sequential removal for other players
         for (let i = 0; i < tilesToDeal; i++) {
             const tileIndex = this.dealingStartIndex - i;
             if (wall[tileIndex]) {
@@ -926,35 +940,33 @@ class MahjongDealingGame {
                 wall[tileIndex].style.display = 'none';
             }
         }
-        
-        this.tilesDealt += tilesToDeal;
-        this.playerTileCounts[this.currentPlayerIndex] += tilesToDeal;
-        
-        // Move the dealing position backwards
         this.dealingStartIndex -= tilesToDeal;
-        
-        // Check if we finished dealing from tiles in front of dealer
-        if (this.currentWallIndex === 3 && this.dealingStartIndex < 0) {
-            this.currentWallIndex = 0;
-            this.dealingStartIndex = this.wallTiles[0].length - 1;
-            // NEW: Move left wall tiles when we start dealing from it
-            this.moveLeftWallForDealing();
-        } else if (this.dealingStartIndex < 0) {
-            this.currentWallIndex = (this.currentWallIndex + 1) % 4;
-            this.dealingStartIndex = this.wallTiles[this.currentWallIndex].length - 1;
-        }
-        
-        this.moveToNextPlayer();
-        this.updateStats();
-        this.highlightCurrentPlayer();
-        this.checkInitialDealComplete();
-        
-        if (!this.initialDealComplete || this.finalDealPhase) {
-            this.makeNextTilesAvailable();
-        }
-        
-        this.checkCompletion();
     }
+            
+    this.tilesDealt += tilesToDeal;
+    this.playerTileCounts[this.currentPlayerIndex] += tilesToDeal;
+            
+    // Check if we finished dealing from tiles in front of dealer
+    if (this.currentWallIndex === 3 && this.dealingStartIndex < 0) {
+        this.currentWallIndex = 0;
+        this.dealingStartIndex = this.wallTiles[0].length - 1;
+        this.moveLeftWallForDealing();
+    } else if (this.dealingStartIndex < 0) {
+        this.currentWallIndex = (this.currentWallIndex + 1) % 4;
+        this.dealingStartIndex = this.wallTiles[this.currentWallIndex].length - 1;
+    }
+            
+    this.moveToNextPlayer();
+    this.updateStats();
+    this.highlightCurrentPlayer();
+    this.checkInitialDealComplete();
+            
+    if (!this.initialDealComplete || this.finalDealPhase) {
+        this.makeNextTilesAvailable();
+    }
+            
+    this.checkCompletion();
+}
 
     checkInitialDealComplete() {
         const allHave12 = this.playerTileCounts.every(count => count >= 12);
@@ -998,7 +1010,6 @@ class MahjongDealingGame {
             'currentPlayer': this.playerNames[this.currentPlayerIndex]
         });
         
-        // Update player area labels
         const playerElements = [
             {id: 'playerLeft', name: 'North', count: this.playerTileCounts[2]},
             {id: 'playerTop', name: 'West', count: this.playerTileCounts[1]},
