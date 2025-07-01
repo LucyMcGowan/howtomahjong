@@ -327,17 +327,18 @@ class MahjongUtils {
         // Enhanced drag end handler
         const unifiedDragEnd = (event) => {
             if (event.type === 'dragend' || event.type === 'touchend') {
-                isDragging = false;
-                draggedElement = null;
-                currentDropTarget = null;
-                
+           
                 if (handlers.dragEnd) {
+                   const realTarget = draggedElement || event.target;
                     const syntheticEvent = event.type === 'touchend' ? {
                         type: 'dragend',
-                        target: draggedElement
+                        target: realTarget
                     } : event;
                     handlers.dragEnd(syntheticEvent);
                 }
+                isDragging = false;
+                draggedElement = null;
+                currentDropTarget = null;
             }
         };
 
@@ -543,4 +544,51 @@ class MahjongUtils {
             y: Math.random() * maxHeight
         };
     }
+    
+    static buildTileMap() {
+        return {
+            // Bamboo tiles
+            'B1': 'bam-1.svg', 'B2': 'bam-2.svg', 'B3': 'bam-3.svg', 'B4': 'bam-4.svg', 'B5': 'bam-5.svg',
+            'B6': 'bam-6.svg', 'B7': 'bam-7.svg', 'B8': 'bam-8.svg', 'B9': 'bam-9.svg',
+            
+            // Character tiles
+            'C1': 'crak-1.svg', 'C2': 'crak-2.svg', 'C3': 'crak-3.svg', 'C4': 'crak-4.svg', 'C5': 'crak-5.svg',
+            'C6': 'crak-6.svg', 'C7': 'crak-7.svg', 'C8': 'crak-8.svg', 'C9': 'crak-9.svg',
+            
+            // Dot tiles
+            'D1': 'dot-1.svg', 'D2': 'dot-2.svg', 'D3': 'dot-3.svg', 'D4': 'dot-4.svg', 'D5': 'dot-5.svg',
+            'D6': 'dot-6.svg', 'D7': 'dot-7.svg', 'D8': 'dot-8.svg', 'D9': 'dot-9.svg',
+            
+            // Wind tiles
+            'E': 'east.svg',
+            'S': 'south.svg',
+            'W': 'west.svg',
+            'N': 'north.svg',
+            
+            // Dragon tiles
+            'DD': 'crak-dragon.svg',   // Red dragon
+            'BD': 'dot-dragon.svg',   // White dragon
+            'CD': 'bam-dragon.svg',   // Green dragon
+            
+            // Special tiles
+            'JK': 'joker.svg',
+            'FL': 'flower.svg'
+        };
+    }
+    
+    static playClick() {
+    if (!this._ac) {
+      this._ac = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const now = this._ac.currentTime;
+    const osc = this._ac.createOscillator();
+    const gain = this._ac.createGain();
+    osc.connect(gain);
+    gain.connect(this._ac.destination);
+    osc.frequency.value = 1000;
+    gain.gain.setValueAtTime(1, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+    osc.start(now);
+    osc.stop(now + 0.05);
+  }
 }
