@@ -171,80 +171,63 @@ class MahjongUtils {
         let isDragging = false;
         let draggedElement = null;
         let currentDropTarget = null;
+        let dragData = {};
 
-        // Enhanced drag start handler that works with both mouse and touch
         const unifiedDragStart = (event) => {
-            // Handle both mouse drag start and touch start
             if (event.type === 'dragstart' || event.type === 'touchstart') {
+                const targetElement = (event.type === 'touchstart')
+                    ? this.getElementFromPoint(this.getEventCoordinates(event).clientX, this.getEventCoordinates(event).clientY)
+                    : event.target;
+
+                const isDraggableElement = targetElement && (
+                    targetElement.draggable === true ||
+                    targetElement.classList.contains('mahjong-tile') ||
+                    targetElement.dataset.tileId
+                );
+
+                const isNonDraggableInteractive = targetElement && (
+                    targetElement.tagName === 'BUTTON' ||
+                    targetElement.tagName === 'A' ||
+                    targetElement.tagName === 'INPUT' ||
+                    targetElement.closest('button, a, input')
+                );
+
+                if (!isDraggableElement || isNonDraggableInteractive) {
+                    return;
+                }
                 
-                // For touch events, we need to identify the dragged element
-                if (event.type === 'touchstart') {
-                    const coords = this.getEventCoordinates(event);
-                    draggedElement = this.getElementFromPoint(coords.clientX, coords.clientY);
-                    
-                    // Check if the touched element is draggable or a tile
-                    const isDraggableElement = draggedElement && (
-                        draggedElement.draggable === true ||
-                        draggedElement.classList.contains('mahjong-tile') ||
-                        draggedElement.dataset.tileId
-                    );
-                    
-                    // Check if it's a button or other interactive element that shouldn't be dragged
-                    const isClickableElement = draggedElement && (
-                        draggedElement.tagName === 'BUTTON' ||
-                        draggedElement.tagName === 'A' ||
-                        draggedElement.tagName === 'INPUT' ||
-                        draggedElement.type === 'button' ||
-                        draggedElement.type === 'submit' ||
-                        draggedElement.role === 'button' ||
-                        draggedElement.classList.contains('btn') ||
-                        draggedElement.classList.contains('button')
-                    );
-                    
-                    // If it's a clickable element, don't start dragging
-                    if (isClickableElement || !isDraggableElement) {
-                        isDragging = false;
-                        return;
-                    }
-                    
-                    isDragging = true;
-                    
-                    // Create a synthetic drag start event for touch
-                    const syntheticEvent = {
-                        ...event,
-                        type: 'dragstart',
-                        target: draggedElement,
-                        dataTransfer: {
-                            setData: (type, data) => {
-                                // Store the data for later retrieval
-                                if (!syntheticEvent._dragData) {
-                                    syntheticEvent._dragData = {};
-                                }
-                                syntheticEvent._dragData[type] = data;
-                            },
-                            getData: (type) => {
-                                return syntheticEvent._dragData ? syntheticEvent._dragData[type] : null;
-                            }
+                isDragging = true;
+                draggedElement = targetElement;
+                dragData = {}; // Reset data for new drag operation
+
+                const syntheticEvent = {
+                    ...event,
+                    type: 'dragstart',
+                    target: draggedElement,
+                    preventDefault: () => event.preventDefault(),
+                    stopPropagation: () => event.stopPropagation(),
+                    dataTransfer: {
+                        setData: (type, data) => {
+                            if (event.dataTransfer) event.dataTransfer.setData(type, data);
+                            dragData[type] = data;
+                        },
+                        getData: (type) => {
+                            if (event.dataTransfer) return event.dataTransfer.getData(type);
+                            return dragData[type] || null;
                         }
-                    };
-                    
-                    // Prevent default touch behaviors only for draggable elements
+                    }
+                };
+                
+                if (event.type === 'touchstart') {
                     event.preventDefault();
-                    
-                    if (handlers.dragStart) {
-                        handlers.dragStart(syntheticEvent);
-                    }
-                } else {
-                    isDragging = true;
-                    draggedElement = event.target;
-                    if (handlers.dragStart) {
-                        handlers.dragStart(event);
-                    }
+                }
+
+                if (handlers.dragStart) {
+                    handlers.dragStart(syntheticEvent);
                 }
             }
         };
 
-        // Enhanced drag over handler for touch move
         const unifiedDragOver = (event) => {
             if (event.type === 'dragover' || (event.type === 'touchmove' && isDragging)) {
                 event.preventDefault();
@@ -253,26 +236,21 @@ class MahjongUtils {
                     const coords = this.getEventCoordinates(event);
                     const elementBelow = this.getElementFromPoint(coords.clientX, coords.clientY, draggedElement);
                     
-                    // Simulate dragover for the element below
-                    if (elementBelow && elementBelow !== currentDropTarget) {
+                    if (elementBelow !== currentDropTarget) {
                         if (currentDropTarget && handlers.dragLeave) {
-                            const leaveEvent = {
-                                type: 'dragleave',
-                                target: currentDropTarget
-                            };
-                            handlers.dragLeave(leaveEvent);
+                            handlers.dragLeave({ type: 'dragleave', target: currentDropTarget });
                         }
                         
                         currentDropTarget = elementBelow;
-                        const overEvent = {
-                            type: 'dragover',
-                            target: elementBelow,
-                            clientX: coords.clientX,
-                            clientY: coords.clientY,
-                            preventDefault: () => {}
-                        };
-                        
-                        if (handlers.dragOver) {
+                        if (currentDropTarget && handlers.dragOver) {
+                           const overEvent = {
+                                type: 'dragover',
+                                target: currentDropTarget,
+                                clientX: coords.clientX,
+                                clientY: coords.clientY,
+                                preventDefault: () => {},
+                                stopPropagation: () => {}
+                            };
                             handlers.dragOver(overEvent);
                         }
                     }
@@ -282,109 +260,87 @@ class MahjongUtils {
             }
         };
 
-        // Enhanced drop handler for touch end
-        const unifiedDrop = (event) => {
-            if (event.type === 'drop' || (event.type === 'touchend' && isDragging)) {
-                event.preventDefault();
-                
-                if (event.type === 'touchend') {
-                    const coords = this.getEventCoordinates(event);
-                    const dropTarget = this.getElementFromPoint(coords.clientX, coords.clientY, draggedElement);
-                    
-                    if (dropTarget) {
-                        const dropEvent = {
-                            type: 'drop',
-                            target: dropTarget,
-                            clientX: coords.clientX,
-                            clientY: coords.clientY,
-                            preventDefault: () => {},
-                            dataTransfer: {
-                                getData: (type) => {
-                                    // Return the tile ID for the dragged element
-                                    if (type === 'text/plain' && draggedElement) {
-                                        return draggedElement.dataset.tileId || null;
-                                    }
-                                    return null;
-                                }
-                            }
-                        };
-                        
-                        if (handlers.drop) {
-                            handlers.drop(dropEvent);
-                        }
+        const touchEndHandler = (event) => {
+            if (!isDragging) return;
+            event.preventDefault();
+
+            // --- 1. Drop Logic ---
+            const coords = this.getEventCoordinates(event);
+            const dropTarget = this.getElementFromPoint(coords.clientX, coords.clientY, draggedElement);
+
+            if (dropTarget && handlers.drop) {
+                const dropEvent = {
+                    type: 'drop',
+                    target: dropTarget,
+                    clientX: coords.clientX,
+                    clientY: coords.clientY,
+                    preventDefault: () => {},
+                    stopPropagation: () => {},
+                    dataTransfer: {
+                        getData: (type) => dragData[type] || (draggedElement ? draggedElement.dataset.tileId : null)
                     }
-                } else if (handlers.drop) {
-                    handlers.drop(event);
-                }
+                };
+                handlers.drop(dropEvent);
+            }
 
-                // Reset drag state
-                isDragging = false;
-                draggedElement = null;
-                currentDropTarget = null;
+            // --- 2. DragEnd Logic ---
+            if (handlers.dragEnd) {
+                const syntheticEvent = { type: 'dragend', target: draggedElement };
+                handlers.dragEnd(syntheticEvent);
+            }
+
+            // --- 3. State Reset ---
+            isDragging = false;
+            draggedElement = null;
+            currentDropTarget = null;
+            dragData = {};
+        };
+        
+        const mouseDropHandler = (event) => {
+            event.preventDefault();
+            if (handlers.drop) {
+                 handlers.drop(event);
             }
         };
-
-        // Enhanced drag end handler
-        const unifiedDragEnd = (event) => {
-            if (event.type === 'dragend' || event.type === 'touchend') {
-           
-                if (handlers.dragEnd) {
-                   const realTarget = draggedElement || event.target;
-                    const syntheticEvent = event.type === 'touchend' ? {
-                        type: 'dragend',
-                        target: realTarget
-                    } : event;
-                    handlers.dragEnd(syntheticEvent);
-                }
-                isDragging = false;
-                draggedElement = null;
-                currentDropTarget = null;
+        
+        const mouseDragEndHandler = (event) => {
+            if (handlers.dragEnd) {
+                handlers.dragEnd(event);
             }
+            isDragging = false;
+            draggedElement = null;
+            currentDropTarget = null;
         };
-
-        // Add mouse event listeners
-        if (handlers.dragStart) {
-            document.addEventListener('dragstart', unifiedDragStart);
-        }
-        if (handlers.dragOver) {
-            document.addEventListener('dragover', unifiedDragOver);
-        }
-        if (handlers.dragLeave) {
-            document.addEventListener('dragleave', handlers.dragLeave);
-        }
-        if (handlers.drop) {
-            document.addEventListener('drop', unifiedDrop);
-        }
-        if (handlers.dragEnd) {
-            document.addEventListener('dragend', unifiedDragEnd);
-        }
-
-        // Add touch event listeners with better event filtering
+        
         const touchStartHandler = (event) => {
-            // Only process touch events on draggable elements
             const target = event.target;
-            const isDraggableElement = target && (
-                target.draggable === true ||
-                target.classList.contains('mahjong-tile') ||
-                target.dataset.tileId
-            );
-            
-            if (isDraggableElement) {
+            const parentTile = target.closest('.mahjong-tile, [data-drag-enabled="true"]');
+            if (parentTile) {
                 unifiedDragStart(event);
             }
         };
         
+        // Add event listeners
+        document.addEventListener('dragstart', unifiedDragStart);
+        document.addEventListener('dragover', unifiedDragOver);
+        if (handlers.dragLeave) {
+            document.addEventListener('dragleave', handlers.dragLeave);
+        }
+        document.addEventListener('drop', mouseDropHandler);
+        document.addEventListener('dragend', mouseDragEndHandler);
+
+        // Add touch listeners
         document.addEventListener('touchstart', touchStartHandler, { passive: false });
         document.addEventListener('touchmove', unifiedDragOver, { passive: false });
-        document.addEventListener('touchend', unifiedDrop, { passive: false });
-        document.addEventListener('touchend', unifiedDragEnd, { passive: false });
+        document.addEventListener('touchend', touchEndHandler, { passive: false });
+        document.addEventListener('touchcancel', touchEndHandler, { passive: false });
 
-        // Store references for cleanup
         this._dragHandlers = {
             unifiedDragStart,
             unifiedDragOver,
-            unifiedDrop,
-            unifiedDragEnd,
+            mouseDropHandler,
+            mouseDragEndHandler,
+            touchEndHandler,
             touchStartHandler,
             originalHandlers: handlers
         };
@@ -392,38 +348,29 @@ class MahjongUtils {
 
     /**
      * Removes drag and drop event listeners
-     * @param {Object} handlers - Object containing handler functions to remove
      */
-    static removeDragAndDrop(handlers) {
+    static removeDragAndDrop() {
         if (this._dragHandlers) {
-            const { unifiedDragStart, unifiedDragOver, unifiedDrop, unifiedDragEnd, touchStartHandler, originalHandlers } = this._dragHandlers;
+            const { unifiedDragStart, unifiedDragOver, mouseDropHandler, mouseDragEndHandler, touchEndHandler, touchStartHandler, originalHandlers } = this._dragHandlers;
             
-            // Remove mouse event listeners
-            if (originalHandlers.dragStart) {
-                document.removeEventListener('dragstart', unifiedDragStart);
-            }
-            if (originalHandlers.dragOver) {
-                document.removeEventListener('dragover', unifiedDragOver);
-            }
+            document.removeEventListener('dragstart', unifiedDragStart);
+            document.removeEventListener('dragover', unifiedDragOver);
             if (originalHandlers.dragLeave) {
                 document.removeEventListener('dragleave', originalHandlers.dragLeave);
             }
-            if (originalHandlers.drop) {
-                document.removeEventListener('drop', unifiedDrop);
-            }
-            if (originalHandlers.dragEnd) {
-                document.removeEventListener('dragend', unifiedDragEnd);
-            }
+            document.removeEventListener('drop', mouseDropHandler);
+            document.removeEventListener('dragend', mouseDragEndHandler);
 
-            // Remove touch event listeners
             document.removeEventListener('touchstart', touchStartHandler);
             document.removeEventListener('touchmove', unifiedDragOver);
-            document.removeEventListener('touchend', unifiedDrop);
-            document.removeEventListener('touchend', unifiedDragEnd);
+            document.removeEventListener('touchend', touchEndHandler);
+            document.removeEventListener('touchcancel', touchEndHandler);
 
             delete this._dragHandlers;
         }
     }
+
+    // --- Other methods remain unchanged ---
 
     /**
      * Updates a stats display element
@@ -468,7 +415,6 @@ class MahjongUtils {
      * @param {Array} allPlayerIds - Array of all player element IDs
      */
     static highlightCurrentPlayer(className, currentPlayerId, allPlayerIds) {
-        // Remove class from all players
         allPlayerIds.forEach(playerId => {
             const element = document.getElementById(playerId);
             if (element) {
@@ -476,7 +422,6 @@ class MahjongUtils {
             }
         });
 
-        // Add class to current player
         const currentElement = document.getElementById(currentPlayerId);
         if (currentElement) {
             currentElement.classList.add(className);
@@ -495,7 +440,6 @@ class MahjongUtils {
         cluster.className = 'tile-cluster';
 
         if (tileCount === 4) {
-            // Normal case: 2 stacks of 2
             for (let stack = 0; stack < 2; stack++) {
                 for (let i = 0; i < 2; i++) {
                     const tile = document.createElement('div');
@@ -507,7 +451,6 @@ class MahjongUtils {
                 }
             }
         } else if (tileCount === 2) {
-            // Special case: 1 stack of 2 or dealer's final 2 tiles
             for (let i = 0; i < 2; i++) {
                 const tile = document.createElement('div');
                 tile.className = 'mahjong-tile placed';
@@ -520,7 +463,6 @@ class MahjongUtils {
                 cluster.appendChild(tile);
             }
         } else if (tileCount === 1) {
-            // Special case: 1 tile
             const tile = document.createElement('div');
             tile.className = 'mahjong-tile placed';
             tile.style.position = 'absolute';
@@ -547,48 +489,31 @@ class MahjongUtils {
     
     static buildTileMap() {
         return {
-            // Bamboo tiles
             'B1': 'bam-1.svg', 'B2': 'bam-2.svg', 'B3': 'bam-3.svg', 'B4': 'bam-4.svg', 'B5': 'bam-5.svg',
             'B6': 'bam-6.svg', 'B7': 'bam-7.svg', 'B8': 'bam-8.svg', 'B9': 'bam-9.svg',
-            
-            // Character tiles
             'C1': 'crak-1.svg', 'C2': 'crak-2.svg', 'C3': 'crak-3.svg', 'C4': 'crak-4.svg', 'C5': 'crak-5.svg',
             'C6': 'crak-6.svg', 'C7': 'crak-7.svg', 'C8': 'crak-8.svg', 'C9': 'crak-9.svg',
-            
-            // Dot tiles
             'D1': 'dot-1.svg', 'D2': 'dot-2.svg', 'D3': 'dot-3.svg', 'D4': 'dot-4.svg', 'D5': 'dot-5.svg',
             'D6': 'dot-6.svg', 'D7': 'dot-7.svg', 'D8': 'dot-8.svg', 'D9': 'dot-9.svg',
-            
-            // Wind tiles
-            'E': 'east.svg',
-            'S': 'south.svg',
-            'W': 'west.svg',
-            'N': 'north.svg',
-            
-            // Dragon tiles
-            'DD': 'crak-dragon.svg',   // Red dragon
-            'BD': 'dot-dragon.svg',   // White dragon
-            'CD': 'bam-dragon.svg',   // Green dragon
-            
-            // Special tiles
-            'JK': 'joker.svg',
-            'FL': 'flower.svg'
+            'E': 'east.svg', 'S': 'south.svg', 'W': 'west.svg', 'N': 'north.svg',
+            'DD': 'crak-dragon.svg', 'BD': 'dot-dragon.svg', 'CD': 'bam-dragon.svg',
+            'JK': 'joker.svg', 'FL': 'flower.svg'
         };
     }
     
     static playClick() {
-    if (!this._ac) {
-      this._ac = new (window.AudioContext || window.webkitAudioContext)();
+        if (!this._ac) {
+          this._ac = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const now = this._ac.currentTime;
+        const osc = this._ac.createOscillator();
+        const gain = this._ac.createGain();
+        osc.connect(gain);
+        gain.connect(this._ac.destination);
+        osc.frequency.value = 1000;
+        gain.gain.setValueAtTime(1, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        osc.start(now);
+        osc.stop(now + 0.05);
     }
-    const now = this._ac.currentTime;
-    const osc = this._ac.createOscillator();
-    const gain = this._ac.createGain();
-    osc.connect(gain);
-    gain.connect(this._ac.destination);
-    osc.frequency.value = 1000;
-    gain.gain.setValueAtTime(1, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-    osc.start(now);
-    osc.stop(now + 0.05);
-  }
 }
