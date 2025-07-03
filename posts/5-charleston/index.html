@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-bfbc79891bc2d20047d7945790fbad32.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-a4c725aaa911ae58e872a1a503fea0dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -214,6 +214,12 @@ New Game
 </button>
 <button onclick="charlestonGame.showHelp()">
 Help
+</button>
+<button id="clear-selection-btn" class="game-btn" style="display: none;">
+Clear Selection
+</button>
+<button id="sort-hand-btn" class="game-btn">
+Sort Hand
 </button>
 </div>
 </section></main></div>
@@ -828,28 +834,14 @@ class UIRenderer {
         if (modal) modal.style.display = 'none';
         if (backdrop) backdrop.style.display = 'none';
     }
-
+    
+    /**
+     * **REWRITTEN**
+     * Attaches a simple click listener for tile selection.
+     * The drag-and-drop handler in MahjongUtils will correctly prevent
+     * this from firing during a drag gesture on mobile.
+     */
     attachTileEventListeners(tileElement) {
-        let touchTimeout;
-
-        // This pattern helps differentiate a tap (for selection) from a drag gesture on mobile.
-        tileElement.addEventListener('touchstart', (e) => {
-            touchTimeout = setTimeout(() => {
-                if (window.charlestonGame) {
-                    window.charlestonGame.selectTile(tileElement);
-                }
-            }, 100); 
-        }, { passive: true });
-        
-        tileElement.addEventListener('touchmove', (e) => {
-            clearTimeout(touchTimeout);
-        });
-
-        tileElement.addEventListener('touchend', (e) => {
-            clearTimeout(touchTimeout);
-        });
-
-        // Click handler for selection on desktop.
         tileElement.addEventListener('click', (e) => {
             if (window.charlestonGame) {
                 window.charlestonGame.selectTile(tileElement);
@@ -861,7 +853,6 @@ class UIRenderer {
         const container = this.handContainers[playerId];
         if (!container) return;
 
-        // A more efficient way to update: reuse existing DOM elements.
         const existingElements = Array.from(container.children);
         
         tiles.forEach((tileCode, index) => {
@@ -869,23 +860,19 @@ class UIRenderer {
             let tileElement = existingElements[index];
 
             if (tileElement) {
-                // Update existing tile
                 tileElement.dataset.tileCode = tileCode;
                 this.updateTileContent(tileElement, tileCode, isYou);
             } else {
-                // Create new tile
                 tileElement = this.createTileElement(tileCode, isYou, elementId);
                 container.appendChild(tileElement);
             }
             
-            // Ensure properties are correct
             tileElement.dataset.tileId = elementId;
             tileElement.classList.remove('selected');
             tileElement.draggable = isYou;
             tileElement.style.opacity = '1';
         });
 
-        // Remove any extra tiles that are no longer in the hand
         if (existingElements.length > tiles.length) {
             for (let i = tiles.length; i < existingElements.length; i++) {
                 existingElements[i].remove();
@@ -918,7 +905,7 @@ class UIRenderer {
             const svgPath = this.getTileSvgPath(tileCode);
             tileElement.innerHTML = `<img src="${svgPath}" alt="${tileCode}" class="tile-image-play" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">`;
         } else {
-            tileElement.innerHTML = ''; // Other players' tiles are blank
+            tileElement.innerHTML = '';
         }
     }
 
@@ -953,27 +940,30 @@ class UIRenderer {
         }
     }
 
+    /**
+     * **REWRITTEN**
+     * Manages visibility of all control buttons.
+     */
     updateButtons(selectedCount, blindPassAllowed, canSkip) {
         const blindBtn = document.getElementById('blind-pass-btn');
         const skipBtn = document.getElementById('skip-btn');
         const passBtn = document.getElementById('pass-btn');
+        const clearBtn = document.getElementById('clear-selection-btn');
 
         if (blindBtn) {
-            blindBtn.style.display = blindPassAllowed ? 'block' : 'none';
-            if (blindPassAllowed) {
-                blindBtn.textContent = selectedCount === 0 ? 'Blind Pass (pass 0)' :
-                                       selectedCount === 3 ? 'Do Not Blind Pass' :
-                                       `Blind Pass (pass ${selectedCount})`;
-            }
+            blindBtn.style.display = blindPassAllowed ? 'inline-block' : 'none';
         }
-
+        
         if (skipBtn) {
-            skipBtn.style.display = canSkip ? 'block' : 'none';
+            skipBtn.style.display = canSkip ? 'inline-block' : 'none';
         }
 
         if (passBtn) {
-            passBtn.style.display = 'block';
             passBtn.disabled = selectedCount !== 3;
+        }
+
+        if (clearBtn) {
+            clearBtn.style.display = selectedCount > 0 ? 'inline-block' : 'none';
         }
     }
 
@@ -1119,21 +1109,28 @@ class CharlestonGame {
         });
     }
 
+    /**
+     * **REWRITTEN**
+     * Handles tile selection. Only adds a tile if not already selected
+     * and if fewer than 3 tiles are selected. Does not handle unselecting.
+     */
     selectTile(tileElement) {
         const tileElementId = tileElement.dataset.tileId;
         const tileCode = tileElement.dataset.tileCode;
 
         if (this.gameState.isSelected(tileElementId)) {
-            this.gameState.removeSelectedTile(tileElementId);
-            this.uiRenderer.updateTileSelection(tileElement, false);
+            // If tile is already selected, do nothing.
+            // User must use the "Clear Selection" button to unselect.
+            MahjongUtils.showHint('This tile is already selected. Drag to pass or clear selection.');
+            return;
+        }
+
+        if (this.gameState.canSelectMoreTiles()) {
+            this.gameState.addSelectedTile(tileElementId, tileCode);
+            this.uiRenderer.updateTileSelection(tileElement, true);
         } else {
-            if (this.gameState.canSelectMoreTiles()) {
-                this.gameState.addSelectedTile(tileElementId, tileCode);
-                this.uiRenderer.updateTileSelection(tileElement, true);
-            } else {
-                MahjongUtils.showHint('You can only select up to 3 tiles!');
-                return;
-            }
+            MahjongUtils.showHint('You have already selected 3 tiles. Drag to pass or clear your selection.');
+            return;
         }
         this.updateUI();
     }
@@ -1197,8 +1194,13 @@ class CharlestonGame {
             return;
         }
         
+        const dropZone = this.getDropZoneForDirection(this.gameState.currentDirection);
         if (navigator.vibrate) navigator.vibrate(50);
         MahjongUtils.playClick();
+        if (dropZone) {
+            dropZone.classList.add('snap');
+            setTimeout(() => dropZone.classList.remove('snap'), 200);
+        }
 
         this.performPass(selectedTilesArray);
         this.uiRenderer.clearAllSelections();
@@ -1257,7 +1259,7 @@ class CharlestonGame {
             const receivedTilesToKeep = tilesYouReceive.slice(tilesToPassFromReceived);
             const yourFinalPass = [...selectedTilesToKeep, ...receivedTilesToPass];
 
-            this.gameState.playerHands.you = HandManager.addTilesToHand(this.gameState.playerHands.you, receivedTilesToKeep);
+            this.gameState.playerHands.you = [ ...receivedTilesToKeep, ...this.gameState.playerHands.you ];
 
             const allPasses = { you: yourFinalPass, ...otherPlayersPasses };
 
@@ -1285,6 +1287,11 @@ class CharlestonGame {
         MahjongUtils.showHint('Blind pass cancelled.');
     }
 
+    /**
+     * **REWRITTEN**
+     * Adds received tiles to the left of the player's hand (unsorted)
+     * so they are easy to identify. Other players' hands are sorted automatically.
+     */
     performPass(tilesToPass) {
         this.gameState.playerHands.you = HandManager.removeTilesFromHand(this.gameState.playerHands.you, tilesToPass);
 
@@ -1296,9 +1303,11 @@ class CharlestonGame {
             this.gameState.playerHands[player] = HandManager.removeTilesFromHand(hand, pass);
         });
 
+        // Add new tiles to the LEFT of your hand
         const tilesToReceive = otherPlayersPasses[this.gameState.getReceiveDirection()];
-        this.gameState.playerHands.you = HandManager.addTilesToHand(this.gameState.playerHands.you, tilesToReceive);
+        this.gameState.playerHands.you = [ ...tilesToReceive, ...this.gameState.playerHands.you ];
 
+        // Opponent hands are sorted automatically
         const allPasses = { you: tilesToPass, ...otherPlayersPasses };
         ['right', 'across', 'left'].forEach(player => {
             const playerReceiveDirection = this.getPlayerReceiveDirection(player);
@@ -1337,6 +1346,27 @@ class CharlestonGame {
             else { this.showCourtesyPass(); return; }
         }
         this.updateUI();
+    }
+    
+    /**
+     * **NEW**
+     * Clears the current tile selection.
+     */
+    clearSelection() {
+        this.uiRenderer.clearAllSelections();
+        this.gameState.clearSelectedTiles();
+        this.updateUI();
+        MahjongUtils.showHint('Selection cleared.');
+    }
+    
+    /**
+     * **NEW**
+     * Sorts the player's hand and re-renders it.
+     */
+    sortPlayerHand() {
+        this.gameState.playerHands.you = HandManager.sortHand(this.gameState.playerHands.you);
+        this.renderAllHands();
+        MahjongUtils.showHint('Your hand has been sorted.');
     }
 
     skipSecondPass() {
@@ -1390,10 +1420,17 @@ class CharlestonGame {
         alert(helpText);
     }
 
+    /**
+     * **REWRITTEN**
+     * Attaches event listeners for the new buttons.
+     */
     setupEventListeners() {
         document.getElementById('blind-pass-btn')?.addEventListener('click', () => this.makeBlindPass());
         document.getElementById('skip-btn')?.addEventListener('click', () => this.skipSecondPass());
         document.getElementById('help-btn')?.addEventListener('click', () => this.showHelp());
+        // New button listeners
+        document.getElementById('clear-selection-btn')?.addEventListener('click', () => this.clearSelection());
+        document.getElementById('sort-hand-btn')?.addEventListener('click', () => this.sortPlayerHand());
     }
 }
 
