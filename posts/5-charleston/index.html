@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-1f8d2cba1b3ce9b839dc6053989f0119.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-51dc8329d3b286f8e17f2d3e08ffc456.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -118,11 +118,14 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="charleston-practice" class="level2 container">
-<h2 class="anchored" data-anchor-id="charleston-practice">Charleston Practice</h2>
+<p>After the tiles are dealt, the game begins with a pass called the <strong>Charleston</strong>. Here, each player passes 3 tiles at a time to other players. A <strong>Charleston</strong> consists of 3 passes. On the last pass, you can do what is called a <strong>blind pass</strong>. This means that instead of choosing 3 of <em>your</em> tiles to pass you can choose 0, 1, or 2, and complete the set of three by passing what you were given (without looking). If all players agree, you can do <strong>two Charlestons</strong> prior to the start of the game. At the end of the Charleston you can also do a <strong>courtesy</strong> pass of up to 3 tiles with the player across from you. You and the player agree on how many you would like to pass, it is fine to pass 0 if you do not want to pass any more. Let’s practice!</p>
+<div class="container">
 <div class="instructions">
 <p><strong>Practice the Charleston:</strong></p>
-<p>Select 3 tiles to pass. First Charleston: Right → Across → Left (optional 2nd Left). Second Charleston: Left → Across → Right (optional 2nd Right). Blind passes can be made on the 2nd Left and 3rd Right.</p>
+<p>Select 3 tiles to pass each time. Drag the tiles to the correct player.</p>
+<p>First Charleston: Right → Across → Left<br>
+Second Charleston: Left → Across → Right</p>
+<p>Blind passes can be made on the 2nd Left and 2rd Right.</p>
 </div>
 <div class="stats">
 <div class="stat-box">
@@ -138,7 +141,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Pass</p>
 </div>
 <div class="stat-box">
-<div id="tiles-selected">
+<div id="tiles-selected" class="stat-number">
 <p>0</p>
 </div>
 <p>Tiles Selected</p>
@@ -190,16 +193,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="drop-left" class="drop-zone">
 
 </div>
-<!-- Charleston info popup -->
 <div id="charleston-info" class="charleston-info" style="display: none;">
-<h3 class="anchored">
-Charleston Complete!
-</h3>
-<p id="charleston-message">
-</p>
+<section id="charleston-complete" class="level3">
+<h3 class="anchored" data-anchor-id="charleston-complete">Charleston Complete!</h3>
+<p><span id="charleston-message"></span></p>
 <button onclick="charlestonGame.nextCharleston()">
 Continue
 </button>
+</section>
 </div>
 </div>
 <div class="controls">
@@ -207,7 +208,7 @@ Continue
 Blind Pass
 </button>
 <button onclick="charlestonGame.skipSecondPass()" id="skip-btn" style="display: none;">
-Skip 2nd Pass
+Skip 2nd Charleston
 </button>
 <button onclick="charlestonGame.newGame()">
 New Game
@@ -222,12 +223,11 @@ Clear Selection
 Sort Hand
 </button>
 </div>
-</section></main></div>
+</div>
 
 
 
-
- <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -627,7 +627,7 @@ Sort Hand
     }
   });
   </script>
- <!-- /content -->
+</div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">

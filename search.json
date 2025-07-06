@@ -67,7 +67,7 @@
     "href": "posts/4-dealing/index.html",
     "title": "Learn the Deal",
     "section": "",
-    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below."
+    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below.\nNext Lesson"
   },
   {
     "objectID": "posts/4-dealing/index.html#perfect-deal",
@@ -81,13 +81,6 @@
     "href": "posts/5-charleston/index.html",
     "title": "The Charleston",
     "section": "",
-    "text": "Practice the Charleston:\nSelect 3 tiles to pass. First Charleston: Right → Across → Left (optional 2nd Left). Second Charleston: Left → Across → Right (optional 2nd Right). Blind passes can be made on the 2nd Left and 3rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nContinue\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Pass\n\n\nNew Game\n\n\nHelp\n\n\nClear Selection\n\n\nSort Hand"
-  },
-  {
-    "objectID": "posts/5-charleston/index.html#charleston-practice",
-    "href": "posts/5-charleston/index.html#charleston-practice",
-    "title": "The Charleston",
-    "section": "",
-    "text": "Practice the Charleston:\nSelect 3 tiles to pass. First Charleston: Right → Across → Left (optional 2nd Left). Second Charleston: Left → Across → Right (optional 2nd Right). Blind passes can be made on the 2nd Left and 3rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nContinue\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Pass\n\n\nNew Game\n\n\nHelp\n\n\nClear Selection\n\n\nSort Hand"
+    "text": "After the tiles are dealt, the game begins with a pass called the Charleston. Here, each player passes 3 tiles at a time to other players. A Charleston consists of 3 passes. On the last pass, you can do what is called a blind pass. This means that instead of choosing 3 of your tiles to pass you can choose 0, 1, or 2, and complete the set of three by passing what you were given (without looking). If all players agree, you can do two Charlestons prior to the start of the game. At the end of the Charleston you can also do a courtesy pass of up to 3 tiles with the player across from you. You and the player agree on how many you would like to pass, it is fine to pass 0 if you do not want to pass any more. Let’s practice!\n\n\nPractice the Charleston:\nSelect 3 tiles to pass each time. Drag the tiles to the correct player.\nFirst Charleston: Right → Across → Left\nSecond Charleston: Left → Across → Right\nBlind passes can be made on the 2nd Left and 2rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharleston Complete!\n\n\nContinue\n\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Charleston\n\n\nNew Game\n\n\nHelp\n\n\nClear Selection\n\n\nSort Hand"
   }
 ]
