@@ -492,7 +492,7 @@ class MahjongUtils {
             'D1': 'dot-1.svg', 'D2': 'dot-2.svg', 'D3': 'dot-3.svg', 'D4': 'dot-4.svg', 'D5': 'dot-5.svg',
             'D6': 'dot-6.svg', 'D7': 'dot-7.svg', 'D8': 'dot-8.svg', 'D9': 'dot-9.svg',
             'E': 'east.svg', 'S': 'south.svg', 'W': 'west.svg', 'N': 'north.svg',
-            'DD': 'crak-dragon.svg', 'BD': 'dot-dragon.svg', 'CD': 'bam-dragon.svg',
+            'CD': 'crak-dragon.svg', 'DD': 'dot-dragon.svg', 'BD': 'bam-dragon.svg',
             'JK': 'joker.svg', 'FL': 'flower.svg'
         };
     }

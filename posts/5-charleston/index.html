@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-1f8d2cba1b3ce9b839dc6053989f0119.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-3f3965cf620923b27a2da36f3333ad32.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -757,210 +757,833 @@ Sort Hand
 <script src="../../assets/js/MahjongUtils.js"></script>
 <script>
 // Game State Management
-class HandMatcherGame {
-            constructor() {
-                this.tileMap = MahjongUtils.buildTileMap();
-                this.selectedTiles = new Map(); // tileCode -> count
-                this.currentTargetHand = null;
-                this.targetHands = [
-                    {
-                        description: '<span style="color: green; font-weight: bold;">[22 44]</span> <span style="color: red; font-weight: bold;">[44 666]</span> <span style="color: grey; font-weight: bold;">[8888]</span> (Any 3 Suits)',
-                        tiles: ['B2', 'B2', 'B4', 'B4', 'C4', 'C4', 'C6', 'C6', 'C6', 'D8', 'D8', 'D8', 'D8']
-                    },
-                    {
-                        description: '<span style="color: green; font-weight: bold;">[111 333]</span> <span style="color: red; font-weight: bold;">[555 777]</span> <span style="color: blue; font-weight: bold;">[999]</span> (Any 3 Suits)',
-                        tiles: ['B1', 'B1', 'B1', 'B3', 'B3', 'B3', 'C5', 'C5', 'C5', 'C7', 'C7', 'C7', 'D9', 'D9', 'D9']
-                    },
-                    {
-                        description: '<span style="color: green; font-weight: bold;">[EEEE]</span> <span style="color: red; font-weight: bold;">[SSSS]</span> <span style="color: blue; font-weight: bold;">[WWWW]</span> <span style="color: purple; font-weight: bold;">[N]</span> (All Winds)',
-                        tiles: ['E', 'E', 'E', 'E', 'S', 'S', 'S', 'S', 'W', 'W', 'W', 'W', 'N']
-                    }
-                ];
-                this.init();
-            }
-            
-            init() {
-                this.createTilePool();
-                this.setupEventListeners();
-                this.selectRandomTargetHand();
-            }
-            
-            createTilePool() {
-                // Create bamboo tiles
-                this.createTileGroup('bamboo-tiles', 'B', 1, 9);
-                
-                // Create character tiles
-                this.createTileGroup('character-tiles', 'C', 1, 9);
-                
-                // Create dot tiles
-                this.createTileGroup('dot-tiles', 'D', 1, 9);
-                
-                // Create wind tiles
-                this.createSpecialTileGroup('wind-tiles', ['E', 'S', 'W', 'N']);
-                
-                // Create dragon tiles
-                this.createSpecialTileGroup('dragon-tiles', ['DD', 'BD', 'CD']);
-                
-                // Create special tiles
-                this.createSpecialTileGroup('special-tiles', ['JK', 'FL']);
-            }
-            
-            createTileGroup(containerId, suit, start, end) {
-                const container = document.getElementById(containerId);
-                for (let i = start; i <= end; i++) {
-                    const tileCode = `${suit}${i}`;
-                    const tileElement = this.createTileElement(tileCode);
-                    container.appendChild(tileElement);
+class GameState {
+    constructor() {
+        this.charlestonRound = 1;
+        this.passNumber = 1;
+        this.currentDirection = 'right';
+        this.selectedTiles = new Map();
+        this.playerHands = {
+            you: [],
+            right: [],
+            across: [],
+            left: []
+        };
+        this.blindPassAllowed = false;
+        this.isCourtesyPass = false;
+        this.passSequence = ['right', 'across', 'left'];
+        this.pendingBlindPass = null;
+    }
+
+    reset() {
+        this.charlestonRound = 1;
+        this.passNumber = 1;
+        this.currentDirection = 'right';
+        this.selectedTiles.clear();
+        this.playerHands = {
+            you: [],
+            right: [],
+            across: [],
+            left: []
+        };
+        this.blindPassAllowed = false;
+        this.isCourtesyPass = false;
+        this.pendingBlindPass = null;
+    }
+
+    shouldShowBlindPass() {
+        return (this.passNumber === 3 && this.currentDirection === 'left' && this.charlestonRound === 1) ||
+               (this.passNumber === 3 && this.currentDirection === 'right' && this.charlestonRound === 2);
+    }
+
+    canSelectMoreTiles() {
+        return this.selectedTiles.size < 3;
+    }
+
+    addSelectedTile(tileElementId, tileCode) {
+        if (this.selectedTiles.size < 3) {
+            this.selectedTiles.set(tileElementId, tileCode);
+            return true;
+        }
+        return false;
+    }
+
+    getSelectedTilesArray() {
+        return Array.from(this.selectedTiles.values());
+    }
+
+    removeSelectedTile(tileElementId) {
+        return this.selectedTiles.delete(tileElementId);
+    }
+
+    isSelected(tileElementId) {
+        return this.selectedTiles.has(tileElementId);
+    }
+
+    getSelectedCount() {
+        return this.selectedTiles.size;
+    }
+
+    clearSelectedTiles() {
+        this.selectedTiles.clear();
+    }
+
+    getReceiveDirection() {
+        const receiveMap = {
+            'right': 'left',
+            'across': 'across',
+            'left': 'right'
+        };
+        return receiveMap[this.currentDirection];
+    }
+}
+
+class UIRenderer {
+    constructor() {
+        this.tileElements = new Map();
+        this.handContainers = {
+            you: document.getElementById('your-tiles'),
+            right: document.getElementById('right-tiles'),
+            across: document.getElementById('across-tiles'),
+            left: document.getElementById('left-tiles')
+        };
+        this.createBlindPassModal();
+        this.tileMapCache = MahjongUtils.buildTileMap();
+    }
+
+    createBlindPassModal() {
+        if (document.getElementById('blind-pass-modal')) return;
+
+        const modal = document.createElement('div');
+        modal.id = 'blind-pass-modal';
+        modal.style.cssText = `
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            min-width: 300px;
+        `;
+        document.body.appendChild(modal);
+
+        const backdrop = document.createElement('div');
+        backdrop.id = 'blind-pass-backdrop';
+        backdrop.style.cssText = `
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        `;
+        document.body.appendChild(backdrop);
+    }
+
+    showBlindPassModal(selectedCount, tilesKept, onConfirm, onCancel) {
+        const modal = document.getElementById('blind-pass-modal');
+        const backdrop = document.getElementById('blind-pass-backdrop');
+
+        const tilesToPassBlindly = Math.max(0, 3 - selectedCount);
+        const modalContent = `
+            <h3>Blind Pass Option</h3>
+            <p><strong>How it works:</strong></p>
+            <ul style="text-align: left; margin: 10px 0;">
+                <li>You selected <strong>${selectedCount}</strong> tiles to pass</li>
+                <li>You'll receive 3 tiles from ${this.getReceiveDirectionText()}</li>
+                ${tilesToPassBlindly > 0 ?
+                    `<li><strong>${tilesToPassBlindly}</strong> random tiles from received will be added to your pass</li>` :
+                    `<li>You'll pass only your selected tiles (normal pass behavior)</li>`
                 }
+            </ul>
+            <p><strong>Tiles you're passing:</strong> ${tilesKept.join(', ') || 'None'}</p>
+            <div style="margin-top: 15px;">
+                <button id="confirm-blind-pass" style="margin-right: 10px; padding: 8px 16px; background: #4CAF50; color: white; border: none; border-radius: 4px;">Confirm Blind Pass</button>
+                <button id="cancel-blind-pass" style="padding: 8px 16px; background: #f44336; color: white; border: none; border-radius: 4px;">Cancel</button>
+            </div>
+        `;
+
+        modal.innerHTML = modalContent;
+
+        document.getElementById('confirm-blind-pass').onclick = () => {
+            this.hideBlindPassModal();
+            onConfirm();
+        };
+
+        document.getElementById('cancel-blind-pass').onclick = () => {
+            this.hideBlindPassModal();
+            onCancel();
+        };
+
+        backdrop.onclick = () => {
+            this.hideBlindPassModal();
+            onCancel();
+        };
+
+        modal.style.display = 'block';
+        backdrop.style.display = 'block';
+    }
+
+    getReceiveDirectionText() {
+        const receiveMap = {
+            'right': 'Left player',
+            'across': 'Across player',
+            'left': 'Right player'
+        };
+        return receiveMap[window.charlestonGame?.gameState?.currentDirection] || 'other player';
+    }
+
+    hideBlindPassModal() {
+        const modal = document.getElementById('blind-pass-modal');
+        const backdrop = document.getElementById('blind-pass-backdrop');
+        if (modal) modal.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+    }
+    
+    attachTileEventListeners(tileElement) {
+        let isDragging = false;
+        let touchStartTime = 0;
+        const TAP_TIMEOUT = 250; // Max duration of a tap in milliseconds
+        const DRAG_THRESHOLD = 10; // Min distance moved in pixels to be a drag
+
+        tileElement.addEventListener('click', (e) => {
+            if (e.pointerType === 'touch') {
+                return;
             }
-            
-            createSpecialTileGroup(containerId, tiles) {
-                const container = document.getElementById(containerId);
-                tiles.forEach(tileCode => {
-                    const tileElement = this.createTileElement(tileCode);
-                    container.appendChild(tileElement);
-                });
+            if (window.charlestonGame) {
+                window.charlestonGame.selectTile(tileElement);
             }
-            
-            createTileElement(tileCode) {
-                const tile = document.createElement('div');
-                tile.className = 'mahjong-tile';
-                tile.dataset.tileCode = tileCode;
-                
-                const svgPath = this.getTileSvgPath(tileCode);
-                tile.innerHTML = `<img src="${svgPath}" alt="${tileCode}" class="tile-image">`;
-                
-                tile.addEventListener('click', () => this.addTileToHand(tileCode));
-                
-                return tile;
+        });
+
+
+        tileElement.addEventListener('touchstart', (e) => {
+            isDragging = false;
+            touchStartTime = new Date().getTime();
+            const touch = e.touches[0];
+            tileElement.dataset.startX = touch.clientX;
+            tileElement.dataset.startY = touch.clientY;
+        }, { passive: true });
+
+        tileElement.addEventListener('touchmove', (e) => {
+            if (isDragging) return;
+
+            const touch = e.touches[0];
+            const startX = parseFloat(tileElement.dataset.startX || "0");
+            const startY = parseFloat(tileElement.dataset.startY || "0");
+
+            if (
+                Math.abs(touch.clientX - startX) > DRAG_THRESHOLD ||
+                Math.abs(touch.clientY - startY) > DRAG_THRESHOLD
+            ) {
+                isDragging = true;
             }
-            
-            getTileSvgPath(tileCode) {
-                const fileName = this.tileMap[tileCode] || 'blank.svg';
-                return `../../assets/images/tiles/${fileName}`;
-            }
-            
-            addTileToHand(tileCode) {
-                const currentCount = this.selectedTiles.get(tileCode) || 0;
-                if (currentCount < 4) { // Max 4 of each tile
-                    this.selectedTiles.set(tileCode, currentCount + 1);
-                    this.updateSelectedDisplay();
-                } else {
-                    MahjongUtils.showError(`You already have 4 ${tileCode} tiles!`);
+        }, { passive: true });
+
+        tileElement.addEventListener('touchend', (e) => {
+            const duration = new Date().getTime() - touchStartTime;
+
+            if (!isDragging && duration < TAP_TIMEOUT) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (window.charlestonGame) {
+                    window.charlestonGame.selectTile(tileElement);
                 }
+                tileElement.style.opacity = '1';
+            }
+        });
+    }
+
+
+    updatePlayerHand(playerId, tiles, isYou = false) {
+        const container = this.handContainers[playerId];
+        if (!container) return;
+
+        const existingElements = Array.from(container.children);
+        
+        tiles.forEach((tileCode, index) => {
+            const elementId = `${playerId}-${index}`;
+            let tileElement = existingElements[index];
+
+            if (tileElement) {
+                tileElement.dataset.tileCode = tileCode;
+                this.updateTileContent(tileElement, tileCode, isYou);
+            } else {
+                tileElement = this.createTileElement(tileCode, isYou, elementId);
+                container.appendChild(tileElement);
             }
             
-            removeTileFromHand(tileCode) {
-                const currentCount = this.selectedTiles.get(tileCode) || 0;
-                if (currentCount > 1) {
-                    this.selectedTiles.set(tileCode, currentCount - 1);
-                } else {
-                    this.selectedTiles.delete(tileCode);
-                }
-                this.updateSelectedDisplay();
-            }
-            
-            updateSelectedDisplay() {
-                const container = document.getElementById('selected-container');
-                container.innerHTML = '';
-                
-                if (this.selectedTiles.size === 0) {
-                    container.innerHTML = '<div style="color: #999; font-style: italic;">Click tiles above to build your hand...</div>';
-                    container.classList.remove('has-tiles');
-                    return;
-                }
-                
-                container.classList.add('has-tiles');
-                
-                // Sort tiles for display
-                const sortedTiles = Array.from(this.selectedTiles.entries()).sort((a, b) => {
-                    return this.getTileSortOrder(a[0]) - this.getTileSortOrder(b[0]);
-                });
-                
-                sortedTiles.forEach(([tileCode, count]) => {
-                    const tileElement = this.createSelectedTileElement(tileCode, count);
-                    container.appendChild(tileElement);
-                });
-            }
-            
-            createSelectedTileElement(tileCode, count) {
-                const tile = document.createElement('div');
-                tile.className = 'mahjong-tile selected';
-                tile.dataset.tileCode = tileCode;
-                
-                const svgPath = this.getTileSvgPath(tileCode);
-                tile.innerHTML = `
-                    <img src="${svgPath}" alt="${tileCode}" class="tile-image">
-                    <div class="tile-count">${count}</div>
-                `;
-                
-                tile.addEventListener('click', () => this.removeTileFromHand(tileCode));
-                
-                return tile;
-            }
-            
-            getTileSortOrder(tileCode) {
-                const sortOrder = { 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'S': 5, 'W': 6, 'N': 7, 'DD': 8, 'BD': 8, 'CD': 8, 'J': 9, 'F': 10 };
-                return sortOrder[tileCode.charAt(0)] || sortOrder[tileCode.substring(0, 2)] || 0;
-            }
-            
-            checkHand() {
-                if (this.selectedTiles.size === 0) {
-                    MahjongUtils.showError('Please select some tiles first!');
-                    return;
-                }
-                
-                // Convert selected tiles to array format
-                const selectedArray = [];
-                this.selectedTiles.forEach((count, tileCode) => {
-                    for (let i = 0; i < count; i++) {
-                        selectedArray.push(tileCode);
-                    }
-                });
-                
-                // Sort both arrays for comparison
-                const targetSorted = [...this.currentTargetHand.tiles].sort();
-                const selectedSorted = [...selectedArray].sort();
-                
-                if (targetSorted.length !== selectedSorted.length) {
-                    MahjongUtils.showError(`Wrong number of tiles! Need ${targetSorted.length}, have ${selectedSorted.length}`);
-                    return;
-                }
-                
-                // Check if arrays match
-                const isMatch = targetSorted.every((tile, index) => tile === selectedSorted[index]);
-                
-                if (isMatch) {
-                    MahjongUtils.showSuccess('Perfect match! Well done!');
-                } else {
-                    MahjongUtils.showError('Not quite right. Check your tiles and try again!');
-                }
-            }
-            
-            clearHand() {
-                this.selectedTiles.clear();
-                this.updateSelectedDisplay();
-                MahjongUtils.showHint('Hand cleared!');
-            }
-            
-            selectRandomTargetHand() {
-                const randomIndex = Math.floor(Math.random() * this.targetHands.length);
-                this.currentTargetHand = this.targetHands[randomIndex];
-                document.getElementById('target-description').innerHTML = this.currentTargetHand.description;
-                this.clearHand();
-            }
-            
-            setupEventListeners() {
-                document.getElementById('check-btn').addEventListener('click', () => this.checkHand());
-                document.getElementById('clear-btn').addEventListener('click', () => this.clearHand());
-                document.getElementById('new-hand-btn').addEventListener('click', () => this.selectRandomTargetHand());
+            tileElement.dataset.tileId = elementId;
+            tileElement.classList.remove('selected');
+            tileElement.draggable = isYou;
+            tileElement.style.opacity = '1';
+        });
+
+        if (existingElements.length > tiles.length) {
+            for (let i = tiles.length; i < existingElements.length; i++) {
+                existingElements[i].remove();
             }
         }
-        
-        // Initialize the game
-        document.addEventListener('DOMContentLoaded', () => {
-            new HandMatcherGame();
+    }
+
+    createTileElement(tileCode, isClickable, elementId) {
+        const tile = MahjongUtils.createTile(
+            elementId,
+            null,
+            isClickable,
+            isClickable ? 'mahjong-tile-play' : 'mahjong-tile-play other-player'
+        );
+
+        tile.dataset.tileCode = tileCode;
+        tile.dataset.dragEnabled = String(isClickable);
+        this.tileElements.set(elementId, tile);
+        this.updateTileContent(tile, tileCode, isClickable);
+
+        if (isClickable) {
+            this.attachTileEventListeners(tile);
+        }
+
+        return tile;
+    }
+
+    updateTileContent(tileElement, tileCode, isYou) {
+        if (isYou) {
+            const svgPath = this.getTileSvgPath(tileCode);
+            tileElement.innerHTML = `<img src="${svgPath}" alt="${tileCode}" class="tile-image-play" style="width: 100%; height: 100%; object-fit: contain;">`;
+        } else {
+            tileElement.innerHTML = '';
+        }
+    }
+
+    getTileSvgPath(tileCode) {
+        const fileName = this.tileMapCache[tileCode] || 'blank.svg';
+        return `../../assets/images/tiles/${fileName}`;
+    }
+
+    updateTileSelection(tileElement, isSelected) {
+        tileElement.classList.toggle('selected', isSelected);
+    }
+
+    clearAllSelections() {
+        document.querySelectorAll('.mahjong-tile-play.selected').forEach(tile => {
+            tile.classList.remove('selected');
         });
+    }
+
+    updateStats(charlestonRound, passNumber, selectedCount) {
+        MahjongUtils.updateStats({
+            'charleston-round': charlestonRound,
+            'pass-number': passNumber,
+            'tiles-selected': selectedCount
+        });
+    }
+
+    updatePassDirection(direction, isCourtesy = false) {
+        const directionText = direction.charAt(0).toUpperCase() + direction.slice(1);
+        const element = document.getElementById('pass-direction');
+        if (element) {
+            element.textContent = `Drag to Pass ${directionText}${isCourtesy ? ' (Courtesy)' : ''}`;
+        }
+    }
+
+    /**
+     * **REWRITTEN**
+     * Manages visibility of all control buttons.
+     */
+    updateButtons(selectedCount, blindPassAllowed, canSkip) {
+        const blindBtn = document.getElementById('blind-pass-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const passBtn = document.getElementById('pass-btn');
+        const clearBtn = document.getElementById('clear-selection-btn');
+
+        if (blindBtn) {
+            blindBtn.style.display = blindPassAllowed ? 'inline-block' : 'none';
+        }
+        
+        if (skipBtn) {
+            skipBtn.style.display = canSkip ? 'inline-block' : 'none';
+        }
+
+        if (passBtn) {
+            passBtn.disabled = selectedCount !== 3;
+        }
+
+        if (clearBtn) {
+            clearBtn.style.display = selectedCount > 0 ? 'inline-block' : 'none';
+        }
+    }
+
+    showCharlestonInfo(message, buttonText, buttonCallback) {
+        const info = document.getElementById('charleston-info');
+        const messageElement = document.getElementById('charleston-message');
+        const button = info.querySelector('button');
+
+        if (messageElement) messageElement.innerHTML = message;
+        if (button) {
+            button.textContent = buttonText;
+            button.onclick = buttonCallback;
+        }
+        if (info) info.style.display = 'block';
+    }
+
+    hideCharlestonInfo() {
+        const info = document.getElementById('charleston-info');
+        if (info) info.style.display = 'none';
+    }
+}
+
+// Tile Pool Management
+class TilePool {
+    constructor() {
+        this.baseTiles = this.generateBaseTileSet();
+        this.shuffledPool = [];
+        this.poolIndex = 0;
+        this.reshuffle();
+    }
+
+    generateBaseTileSet() {
+        const tiles = [];
+        const suits = ['B', 'C', 'D'];
+        for (const suit of suits) {
+            for (let rank = 1; rank <= 9; rank++) for (let i = 0; i < 4; i++) tiles.push(`${suit}${rank}`);
+        }
+        const winds = ['E', 'S', 'W', 'N'];
+        for (const wind of winds) for (let i = 0; i < 4; i++) tiles.push(wind);
+        const dragons = ['DD', 'BD', 'CD'];
+        for (const dragon of dragons) for (let i = 0; i < 4; i++) tiles.push(dragon);
+        for (let i = 0; i < 8; i++) {
+            tiles.push('JK');
+            tiles.push('FL');
+        }
+        return tiles;
+    }
+
+    reshuffle() {
+        this.shuffledPool = [...this.baseTiles].sort(() => Math.random() - 0.5);
+        this.poolIndex = 0;
+    }
+
+    getNextTiles(count) {
+        if (this.poolIndex + count > this.shuffledPool.length) {
+            this.reshuffle();
+        }
+        const tiles = this.shuffledPool.slice(this.poolIndex, this.poolIndex + count);
+        this.poolIndex += count;
+        return tiles;
+    }
+
+    getRandomTiles(count) {
+        const tiles = [];
+        for (let i = 0; i < count; i++) {
+            tiles.push(this.baseTiles[Math.floor(Math.random() * this.baseTiles.length)]);
+        }
+        return tiles;
+    }
+}
+
+// Hand Management Utilities
+class HandManager {
+    static sortOrder = { 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'S': 5, 'W': 6, 'N': 7, 'DD': 8, 'BD': 8, 'CD': 8, 'J': 9, 'F': 10 };
+
+    static sortHand(tiles) {
+        return [...tiles].sort((a, b) => {
+            const aOrder = this.sortOrder[a.charAt(0)] || this.sortOrder[a.substring(0, 2)] || 0;
+            const bOrder = this.sortOrder[b.charAt(0)] || this.sortOrder[b.substring(0, 2)] || 0;
+            if (aOrder !== bOrder) return aOrder - bOrder;
+            return a.localeCompare(b);
+        });
+    }
+
+    static removeTilesFromHand(hand, tilesToRemove) {
+        const handCopy = [...hand];
+        tilesToRemove.forEach(tile => {
+            const index = handCopy.indexOf(tile);
+            if (index > -1) handCopy.splice(index, 1);
+        });
+        return handCopy;
+    }
+
+    static addTilesToHand(hand, tilesToAdd) {
+        return this.sortHand([...hand, ...tilesToAdd]);
+    }
+
+    static getRandomTilesFromHand(hand, count) {
+        const handCopy = [...hand];
+        const selectedTiles = [];
+        for (let i = 0; i < count && handCopy.length > 0; i++) {
+            const randomIndex = Math.floor(Math.random() * handCopy.length);
+            selectedTiles.push(handCopy.splice(randomIndex, 1)[0]);
+        }
+        return selectedTiles;
+    }
+}
+
+// Main Game Logic
+class CharlestonGame {
+    constructor() {
+        this.gameState = new GameState();
+        this.uiRenderer = new UIRenderer();
+        this.tilePool = new TilePool();
+        this.draggedTileId = null;
+
+        this.dropZoneCache = {
+            'right': document.getElementById('right-tiles'),
+            'across': document.getElementById('across-tiles'),
+            'left': document.getElementById('left-tiles')
+        };
+        this.init();
+    }
+
+    init() {
+        this.dealInitialHands();
+        this.renderAllHands();
+        this.updateUI();
+        this.setupEventListeners();
+        this.setupDragAndDrop();
+    }
+
+    dealInitialHands() {
+        for (const player of ['you', 'right', 'across', 'left']) {
+            this.gameState.playerHands[player] = this.tilePool.getNextTiles(13);
+        }
+        this.gameState.playerHands.you = HandManager.sortHand(this.gameState.playerHands.you);
+    }
+
+    renderAllHands() {
+        Object.entries(this.gameState.playerHands).forEach(([playerId, tiles]) => {
+            this.uiRenderer.updatePlayerHand(playerId, tiles, playerId === 'you');
+        });
+    }
+
+    selectTile(tileElement) {
+        const tileElementId = tileElement.dataset.tileId;
+        const tileCode = tileElement.dataset.tileCode;
+
+        if (this.gameState.isSelected(tileElementId)) {
+            // If tile is already selected, do nothing.
+            // User must use the "Clear Selection" button to unselect.
+            MahjongUtils.showHint('This tile is already selected. Drag to pass or clear selection.');
+            return;
+        }
+
+        if (this.gameState.canSelectMoreTiles()) {
+            this.gameState.addSelectedTile(tileElementId, tileCode);
+            this.uiRenderer.updateTileSelection(tileElement, true);
+        } else {
+            MahjongUtils.showHint('You have already selected 3 tiles. Drag to pass or clear your selection.');
+            return;
+        }
+        this.updateUI();
+    }
+    
+    setupDragAndDrop() {
+        const self = this;
+        MahjongUtils.setupDragAndDrop({
+            dragStart: (event) => {
+                const tileElement = event.target.closest('.mahjong-tile-play');
+                if (tileElement && tileElement.closest('#your-tiles')) {
+                    self.draggedTileId = tileElement.dataset.tileId;
+                    tileElement.style.opacity = '0.5';
+                    if (event.dataTransfer) {
+                        event.dataTransfer.setData('text/plain', self.draggedTileId);
+                    }
+                }
+            },
+            dragOver: (event) => {
+                const dropZone = self.getDropZoneForDirection(self.gameState.currentDirection);
+                if (dropZone && (event.target === dropZone || dropZone.contains(event.target))) {
+                    event.preventDefault();
+                    dropZone.classList.add('drag-over');
+                }
+            },
+            dragLeave: (event) => {
+                const dropZone = event.target.closest('.player-tiles');
+                if (dropZone) {
+                    dropZone.classList.remove('drag-over');
+                }
+            },
+            drop: (event) => {
+                const dropZone = self.getDropZoneForDirection(self.gameState.currentDirection);
+                if (dropZone) {
+                    dropZone.classList.remove('drag-over');
+                }
+
+                if (dropZone && (event.target === dropZone || dropZone.contains(event.target))) {
+                    if (self.gameState.getSelectedCount() !== 3) {
+                        MahjongUtils.showHint('Please select exactly 3 tiles before dropping to pass!');
+                        return;
+                    }
+                    self.handleAllSelectedTilesDrop();
+                }
+            },
+            dragEnd: (event) => {
+                document.querySelectorAll('.mahjong-tile-play').forEach(tile => tile.style.opacity = '1');
+                self.draggedTileId = null;
+                document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            }
+        });
+    }
+
+    getDropZoneForDirection(direction) {
+        return this.dropZoneCache[direction];
+    }
+
+    handleAllSelectedTilesDrop() {
+        const selectedTilesArray = this.gameState.getSelectedTilesArray();
+        if (selectedTilesArray.length !== 3) {
+            MahjongUtils.showHint('Need exactly 3 tiles selected to pass!');
+            return;
+        }
+        
+        const dropZone = this.getDropZoneForDirection(this.gameState.currentDirection);
+        if (navigator.vibrate) navigator.vibrate(50);
+        MahjongUtils.playClick();
+        if (dropZone) {
+            dropZone.classList.add('snap');
+            setTimeout(() => dropZone.classList.remove('snap'), 200);
+        }
+
+        this.performPass(selectedTilesArray);
+        this.uiRenderer.clearAllSelections();
+        this.gameState.clearSelectedTiles();
+        this.nextPass();
+    }
+
+    updateUI() {
+        const selectedCount = this.gameState.getSelectedCount();
+        const blindPassAllowed = this.gameState.shouldShowBlindPass();
+
+        this.uiRenderer.updateStats(
+            this.gameState.charlestonRound,
+            this.gameState.passNumber,
+            selectedCount
+        );
+        this.uiRenderer.updatePassDirection(
+            this.gameState.currentDirection,
+            this.gameState.isCourtesyPass
+        );
+        const canSkip = (this.gameState.passNumber === 3 && this.gameState.charlestonRound === 1) ||
+                       (this.gameState.passNumber === 3 && this.gameState.charlestonRound === 2);
+        this.uiRenderer.updateButtons(selectedCount, blindPassAllowed, canSkip);
+    }
+
+    makeBlindPass() {
+        if (!this.gameState.shouldShowBlindPass()) {
+            MahjongUtils.showHint('Blind pass is not available for this pass.');
+            return;
+        }
+
+        const selectedTiles = this.gameState.getSelectedTilesArray();
+        this.uiRenderer.showBlindPassModal(
+            selectedTiles.length,
+            selectedTiles,
+            () => this.confirmBlindPass(selectedTiles),
+            () => this.cancelBlindPass()
+        );
+    }
+
+    confirmBlindPass(selectedTilesToKeep) {
+        try {
+            this.gameState.playerHands.you = HandManager.removeTilesFromHand(this.gameState.playerHands.you, selectedTilesToKeep);
+
+            const otherPlayersPasses = {};
+            ['right', 'across', 'left'].forEach(player => {
+                const hand = this.gameState.playerHands[player];
+                const tilesToPass = HandManager.getRandomTilesFromHand(hand, 3);
+                otherPlayersPasses[player] = tilesToPass;
+                this.gameState.playerHands[player] = HandManager.removeTilesFromHand(hand, tilesToPass);
+            });
+
+            const tilesYouReceive = otherPlayersPasses[this.gameState.getReceiveDirection()];
+            const tilesToPassFromReceived = Math.max(0, 3 - selectedTilesToKeep.length);
+            const receivedTilesToPass = tilesYouReceive.slice(0, tilesToPassFromReceived);
+            const receivedTilesToKeep = tilesYouReceive.slice(tilesToPassFromReceived);
+            const yourFinalPass = [...selectedTilesToKeep, ...receivedTilesToPass];
+
+            this.gameState.playerHands.you = [ ...receivedTilesToKeep, ...this.gameState.playerHands.you ];
+
+            const allPasses = { you: yourFinalPass, ...otherPlayersPasses };
+
+            ['right', 'across', 'left'].forEach(player => {
+                const playerReceiveDirection = this.getPlayerReceiveDirection(player);
+                this.gameState.playerHands[player] = HandManager.addTilesToHand(
+                    this.gameState.playerHands[player],
+                    allPasses[playerReceiveDirection]
+                );
+            });
+
+            this.uiRenderer.clearAllSelections();
+            this.gameState.clearSelectedTiles();
+            this.renderAllHands();
+
+            MahjongUtils.showHint(`Blind pass complete! Passed ${selectedTilesToKeep.length} + ${receivedTilesToPass.length} blind tiles.`);
+            this.nextPass();
+        } catch (error) {
+            console.error('Error in blind pass:', error);
+            MahjongUtils.showHint('Error occurred during blind pass. Please restart.');
+        }
+    }
+
+    cancelBlindPass() {
+        MahjongUtils.showHint('Blind pass cancelled.');
+    }
+
+    /**
+     * **REWRITTEN**
+     * Adds received tiles to the left of the player's hand (unsorted)
+     * so they are easy to identify. Other players' hands are sorted automatically.
+     */
+    performPass(tilesToPass) {
+        this.gameState.playerHands.you = HandManager.removeTilesFromHand(this.gameState.playerHands.you, tilesToPass);
+
+        const otherPlayersPasses = {};
+        ['right', 'across', 'left'].forEach(player => {
+            const hand = this.gameState.playerHands[player];
+            const pass = HandManager.getRandomTilesFromHand(hand, 3);
+            otherPlayersPasses[player] = pass;
+            this.gameState.playerHands[player] = HandManager.removeTilesFromHand(hand, pass);
+        });
+
+        // Add new tiles to the LEFT of your hand
+        const tilesToReceive = otherPlayersPasses[this.gameState.getReceiveDirection()];
+        this.gameState.playerHands.you = [ ...tilesToReceive, ...this.gameState.playerHands.you ];
+
+        // Opponent hands are sorted automatically
+        const allPasses = { you: tilesToPass, ...otherPlayersPasses };
+        ['right', 'across', 'left'].forEach(player => {
+            const playerReceiveDirection = this.getPlayerReceiveDirection(player);
+            this.gameState.playerHands[player] = HandManager.addTilesToHand(
+                this.gameState.playerHands[player],
+                allPasses[playerReceiveDirection]
+            );
+        });
+        
+        this.renderAllHands();
+        const receiveText = this.gameState.getReceiveDirection().replace(/^\w/, c => c.toUpperCase());
+        MahjongUtils.showHint(`Passed 3 tiles to ${this.gameState.currentDirection}, received 3 from ${receiveText}!`);
+    }
+
+    getPlayerReceiveDirection(player) {
+        const receiveMaps = {
+            'right': { 'right': 'you', 'across': 'right', 'left': 'across' },
+            'across': { 'right': 'left', 'across': 'you', 'left': 'right' },
+            'left': { 'right': 'across', 'across': 'left', 'left': 'you' }
+        };
+        return receiveMaps[this.gameState.currentDirection][player];
+    }
+
+    nextPass() {
+        this.gameState.passNumber++;
+        const round = this.gameState.charlestonRound;
+        const passNum = this.gameState.passNumber;
+
+        if (round === 1) {
+            if (passNum === 2) this.gameState.currentDirection = 'across';
+            else if (passNum === 3) this.gameState.currentDirection = 'left';
+            else { this.completeCharleston(); return; }
+        } else { // round === 2
+            if (passNum === 2) this.gameState.currentDirection = 'across';
+            else if (passNum === 3) this.gameState.currentDirection = 'right';
+            else { this.showCourtesyPass(); return; }
+        }
+        this.updateUI();
+    }
+    
+    /**
+     * **NEW**
+     * Clears the current tile selection.
+     */
+    clearSelection() {
+        this.uiRenderer.clearAllSelections();
+        this.gameState.clearSelectedTiles();
+        this.updateUI();
+        MahjongUtils.showHint('Selection cleared.');
+    }
+    
+    /**
+     * **NEW**
+     * Sorts the player's hand and re-renders it.
+     */
+    sortPlayerHand() {
+        this.gameState.playerHands.you = HandManager.sortHand(this.gameState.playerHands.you);
+        this.renderAllHands();
+        MahjongUtils.showHint('Your hand has been sorted.');
+    }
+
+    skipSecondPass() {
+        if (this.gameState.charlestonRound === 1) {
+            this.completeCharleston();
+        } else {
+            this.showCourtesyPass();
+        }
+    }
+
+    completeCharleston() {
+        this.uiRenderer.showCharlestonInfo(
+            'First Charleston complete! Ready for the second Charleston?',
+            'Continue',
+            () => this.nextCharleston()
+        );
+    }
+
+    nextCharleston() {
+        this.uiRenderer.hideCharlestonInfo();
+        this.gameState.charlestonRound = 2;
+        this.gameState.passNumber = 1;
+        this.gameState.currentDirection = 'left';
+        this.updateUI();
+    }
+
+    showCourtesyPass() {
+        this.gameState.isCourtesyPass = true;
+        this.gameState.currentDirection = 'across';
+        const message = 'Courtesy Pass: Offer 0-3 tiles to the player across.<br><br>For practice, you can select and drag tiles to pass, or complete the game.';
+        this.uiRenderer.showCharlestonInfo(message, 'Complete Game', () => this.completeGame());
+        this.updateUI();
+    }
+
+    completeGame() {
+        this.uiRenderer.showCharlestonInfo('Charleston practice complete!', 'New Game', () => this.newGame());
+    }
+
+    newGame() {
+        this.uiRenderer.hideCharlestonInfo();
+        this.gameState.reset();
+        this.tilePool.reshuffle();
+        this.dealInitialHands();
+        this.renderAllHands();
+        this.updateUI();
+        MahjongUtils.showHint('New Charleston practice started!');
+    }
+
+    showHelp() {
+        const helpText = `Charleston Practice Help:\n\n1. Select exactly 3 tiles to pass.\n2. Drag any of the selected tiles to the highlighted player area to pass all three.\n3. After the pass, you will receive 3 new tiles.\n\n- Round 1: Pass Right → Across → Left\n- Round 2: Pass Left → Across → Right\n- Blind Pass is an option on the final pass of each Charleston.\n- A Courtesy Pass across ends the game.`;
+        alert(helpText);
+    }
+
+    setupEventListeners() {
+        document.getElementById('blind-pass-btn')?.addEventListener('click', () => this.makeBlindPass());
+        document.getElementById('skip-btn')?.addEventListener('click', () => this.skipSecondPass());
+        document.getElementById('help-btn')?.addEventListener('click', () => this.showHelp());
+        // New button listeners
+        document.getElementById('clear-selection-btn')?.addEventListener('click', () => this.clearSelection());
+        document.getElementById('sort-hand-btn')?.addEventListener('click', () => this.sortPlayerHand());
+    }
+}
+
+// Initialize the game when the page loads
+window.charlestonGame = null;
+document.addEventListener('DOMContentLoaded', () => {
+    window.charlestonGame = new CharlestonGame();
+});
 </script>
 
 
