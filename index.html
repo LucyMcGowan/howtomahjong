@@ -667,10 +667,10 @@ The Card
 <div class="rotation-reminder" id="rotationReminder">
     <div class="rotation-icon">📱</div>
     <div class="rotation-message">
-        Please rotate your device to portrait mode for the best experience
+        Please rotate your device to landscape mode for the best experience
     </div>
     <div class="rotation-subtitle">
-        This content is optimized for vertical viewing
+        This content is optimized for horizontal viewing
     </div>
 </div>
 <style>
@@ -713,14 +713,14 @@ The Card
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
     }
-    /* Show reminder only on mobile devices in landscape mode */
-    @media screen and (max-width: 768px) and (orientation: landscape) {
+    /* Show reminder only on mobile devices in portrait mode */
+    @media screen and (max-width: 768px) and (orientation: portrait) {
         .rotation-reminder {
             display: flex !important;
         }
     }
-    /* Ensure it works with common mobile breakpoints - show when in landscape */
-    @media screen and (max-height: 500px) and (max-width: 900px) and (orientation: landscape) {
+    /* Ensure it works with common mobile breakpoints - show when in portrait */
+    @media screen and (max-height: 900px) and (max-width: 500px) and (orientation: portrait) {
         .rotation-reminder {
             display: flex !important;
         }
@@ -738,9 +738,9 @@ The Card
             const isMobile = window.innerWidth <= 768 || window.innerHeight <= 500;
             const isLandscape = window.innerHeight < window.innerWidth;
             
-            // Additional check for mobile devices - show reminder when in landscape
-            if (isMobile && isLandscape) {
-                console.log('Mobile landscape detected - rotation reminder active');
+            // Additional check for mobile devices - show reminder when in portrait
+            if (isMobile && !isLandscape) {
+                console.log('Mobile portrait detected - rotation reminder active');
             }
         }
         // Wait for DOM to be ready
