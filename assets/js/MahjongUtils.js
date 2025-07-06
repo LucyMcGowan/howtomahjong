@@ -217,10 +217,6 @@ class MahjongUtils {
                         }
                     }
                 };
-                
-               // if (event.type === 'touchstart') {
-              //      event.preventDefault();
-              //  }
 
                 if (handlers.dragStart) {
                     handlers.dragStart(syntheticEvent);

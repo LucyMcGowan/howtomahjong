@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-51dc8329d3b286f8e17f2d3e08ffc456.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-1f8d2cba1b3ce9b839dc6053989f0119.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -221,7 +221,7 @@ Learn the Deal
 </div>
 </div></a>
 </div>
-<div class="g-col-1" data-index="4" data-listing-file-modified-sort="1751822815009" data-listing-reading-time-sort="2" data-listing-word-count-sort="271">
+<div class="g-col-1" data-index="4" data-listing-file-modified-sort="1751825748101" data-listing-reading-time-sort="2" data-listing-word-count-sort="280">
 <a href="./posts/5-charleston/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-center">
 <p class="card-img-top">
@@ -230,6 +230,19 @@ Learn the Deal
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
 The Charleston
+</h5>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="5" data-listing-file-modified-sort="1751826506922" data-listing-reading-time-sort="5" data-listing-word-count-sort="877">
+<a href="./posts/6-card/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-center">
+<p class="card-img-top">
+<img loading="lazy" src="./posts/6-card/featured.png" class="thumbnail-image card-img" style="height: 150px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+The Card
 </h5>
 </div>
 </div></a>
@@ -650,6 +663,112 @@ The Charleston
     </div>
   </div>
 </footer>
+<!-- Mobile Rotation Reminder for Quarto -->
+<div class="rotation-reminder" id="rotationReminder">
+    <div class="rotation-icon">📱</div>
+    <div class="rotation-message">
+        Please rotate your device to portrait mode for the best experience
+    </div>
+    <div class="rotation-subtitle">
+        This content is optimized for vertical viewing
+    </div>
+</div>
+
+<style>
+    /* Mobile Rotation Reminder Styles */
+    .rotation-reminder {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: white;
+        text-align: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .rotation-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        animation: rotate-phone 2s linear infinite;
+    }
+
+    .rotation-message {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        max-width: 300px;
+        font-weight: 500;
+    }
+
+    .rotation-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        max-width: 280px;
+    }
+
+    @keyframes rotate-phone {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Show reminder only on mobile devices in landscape mode */
+    @media screen and (max-width: 768px) and (orientation: landscape) {
+        .rotation-reminder {
+            display: flex !important;
+        }
+    }
+
+    /* Ensure it works with common mobile breakpoints */
+    @media screen and (max-height: 500px) and (max-width: 900px) and (orientation: landscape) {
+        .rotation-reminder {
+            display: flex !important;
+        }
+    }
+</style>
+
+<script>
+    // Mobile Rotation Reminder Script
+    (function() {
+        'use strict';
+        
+        function handleOrientationChange() {
+            const reminder = document.getElementById('rotationReminder');
+            if (!reminder) return;
+            
+            const isMobile = window.innerWidth <= 768 || window.innerHeight <= 500;
+            const isLandscape = window.innerHeight < window.innerWidth;
+            
+            // Additional check for mobile devices
+            if (isMobile && isLandscape) {
+                console.log('Mobile landscape detected - rotation reminder active');
+            }
+        }
+
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                handleOrientationChange();
+            });
+        } else {
+            handleOrientationChange();
+        }
+
+        // Listen for orientation and resize events
+        window.addEventListener('orientationchange', function() {
+            setTimeout(handleOrientationChange, 100);
+        });
+        
+        window.addEventListener('resize', handleOrientationChange);
+    })();
+</script>
 
 
 

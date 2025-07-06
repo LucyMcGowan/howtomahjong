@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "How to Mahjong",
     "section": "",
-    "text": "Learn how to play Mahjong in just 9 easy lessons\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSetup and Seating\n\n\n\n\n\n\n\n\n\n\n\n\nGet to know the tiles\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding the Wall\n\n\n\n\n\n\n\n\n\n\n\n\nLearn the Deal\n\n\n\n\n\n\n\n\n\n\n\n\nThe Charleston\n\n\n\n\n\nNo matching items"
+    "text": "Learn how to play Mahjong in just 9 easy lessons\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSetup and Seating\n\n\n\n\n\n\n\n\n\n\n\n\nGet to know the tiles\n\n\n\n\n\n\n\n\n\n\n\n\nBuilding the Wall\n\n\n\n\n\n\n\n\n\n\n\n\nLearn the Deal\n\n\n\n\n\n\n\n\n\n\n\n\nThe Charleston\n\n\n\n\n\n\n\n\n\n\n\n\nThe Card\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/2-tiles/index.html",
@@ -19,6 +19,34 @@
     "title": "Get to know the tiles",
     "section": "Examples",
     "text": "Examples\nThe suits look different depending on the set you are playing with, but here are some common ones:\n\n\n\nTraditional Tile Set\n\n\n\nThe Mahjong Line\n\n\n\nMy Fair Mahjong\nThere are lots of cute variations available for Mahjong sets. Here is a Southeast Series from My Fair Mahjong. If you are playing with a set you are not familiar with, you can ask to see the included card that will tell you which design represent which tiles.\n\n\n\n\n\n\n\n← Previous\n\n\nNext →\n\n\n\n\nQuick Knowledge Check\nCan you identify what type each tile is? Run through these as many times as you'd like to get to know some common tiles.\n\n\n\nReady to start?\n\n\n🀄\n\n\n\n\nNext Question →\nStart Interactive Quiz!\n\n\n\n\nFun fact: The 1 Bam is sometimes called the “Bird Bam” when it is discarded, a tradition is to all “cheers” 🥂\n\nNext Lesson"
+  },
+  {
+    "objectID": "posts/4-dealing/index.html",
+    "href": "posts/4-dealing/index.html",
+    "title": "Learn the Deal",
+    "section": "",
+    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below.\nNext Lesson"
+  },
+  {
+    "objectID": "posts/4-dealing/index.html#perfect-deal",
+    "href": "posts/4-dealing/index.html#perfect-deal",
+    "title": "Learn the Deal",
+    "section": "🎉 Perfect Deal!",
+    "text": "🎉 Perfect Deal!\nYou’ve successfully dealt all tiles correctly!\nEach player has the right number of tiles.\n\nPractice Again"
+  },
+  {
+    "objectID": "posts/3-wall/index.html",
+    "href": "posts/3-wall/index.html",
+    "title": "Building the Wall",
+    "section": "",
+    "text": "At the start of the game all 152 tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:\nAll tiles are placed face down so no one can see what they are.\nNext Lesson"
+  },
+  {
+    "objectID": "posts/3-wall/index.html#perfect",
+    "href": "posts/3-wall/index.html#perfect",
+    "title": "Building the Wall",
+    "section": "🎉 Perfect!",
+    "text": "🎉 Perfect!\nYou’ve successfully built your wall!\nYour wall has exactly 19 stacks of 2 tiles = 38 tiles total\n\nPractice Again"
   },
   {
     "objectID": "posts/1-setup/index.html",
@@ -49,38 +77,17 @@
     "text": "Let’s Learn!\nReady to become a mahjong player? We’ve designed this guide to take you step-by-step through everything you need to know. Here’s what’s coming up:\n\nTiles - Understanding the symbols and suits\nBuilding the Walls - Setting up each game\nThe Deal - How tiles are distributed to players\nThe Charleston - The unique tile-passing that kicks off the gam\nPlaying the Game - Bringing it all together\n\nEach lesson builds on the previous one, so you’ll develop confidence naturally as you progress. By the end, you’ll be ready to join any mahjong table with the pros!\nNext Lesson"
   },
   {
-    "objectID": "posts/3-wall/index.html",
-    "href": "posts/3-wall/index.html",
-    "title": "Building the Wall",
+    "objectID": "posts/6-card/index.html",
+    "href": "posts/6-card/index.html",
+    "title": "The Card",
     "section": "",
-    "text": "At the start of the game all 152 tiles are in the center of the table face down. Each player builds their own wall of tiles in front of their position. The wall consists of:\nAll tiles are placed face down so no one can see what they are.\nNext Lesson"
-  },
-  {
-    "objectID": "posts/3-wall/index.html#perfect",
-    "href": "posts/3-wall/index.html#perfect",
-    "title": "Building the Wall",
-    "section": "🎉 Perfect!",
-    "text": "🎉 Perfect!\nYou’ve successfully built your wall!\nYour wall has exactly 19 stacks of 2 tiles = 38 tiles total\n\nPractice Again"
-  },
-  {
-    "objectID": "posts/4-dealing/index.html",
-    "href": "posts/4-dealing/index.html",
-    "title": "Learn the Deal",
-    "section": "",
-    "text": "We begin by determining who is East by rolling the dice. The tiles are dealt from East’s wall first. This will rotate each round.\nRead through these steps for how the deal works, then try it yourself in the interactive game below.\nNext Lesson"
-  },
-  {
-    "objectID": "posts/4-dealing/index.html#perfect-deal",
-    "href": "posts/4-dealing/index.html#perfect-deal",
-    "title": "Learn the Deal",
-    "section": "🎉 Perfect Deal!",
-    "text": "🎉 Perfect Deal!\nYou’ve successfully dealt all tiles correctly!\nEach player has the right number of tiles.\n\nPractice Again"
+    "text": "The American Mahjong card is your guide to winning hands. You can purchase this year’s offical card from the National Mah Jongg League. Each line shows exactly what 14 tiles you need to win, using shorthand symbols and helpful notes.\n\n\n\nBasic Structure\nEvery line on the card represents one complete winning hand. The card is organized into different categories, and each hand shows:\n\nShorthand notation (the tile abbreviations)\nNotes (additional details about requirements)\nPoint values (how much the hand is worth)\nConcealed (whether the hand must be concealed, incidated by a C)\n\n\n\n\nShorthand\nThe card uses these standard abbreviations:\n\n1-9: Numbered tiles (any suit: dots, bams, or craks)\nD: Dragon\n0: Soap (white dragon, can be paired with any suit)\nN, E, W, S: Wind tiles (North, East, West, South)\nF: Flower tiles\n\n\n\nExamples\n11 22 333 444 5555\nThis means you need 2 ones, 2 twos, 3 threes, 3 fours, and 4 fives\nFFFF 11 22 333 DDD\nThis means you need 4 flowers, 2 ones, 2 twos, 3 threes, and 3 dragons\n\n\n\nEssential Vocabulary\nUnderstanding these terms is crucial for reading the card:\n\nPair: 2 identical tiles\nPung: 3 identical tiles\n\nKong: 4 identical tiles\nQuint: 5 identical tiles\n\n\n\n\nReading the Notes\nThe notes next to each line give you critical information:\nSuit Requirements\n\n“Same suit” = All numbered tiles must be from the same suit\n“Any 3 suits” = Use tiles from exactly 3 different suits\n“2 suits” = Use tiles from exactly 2 suits\n\nSpecial Conditions\n\n“X” = The pungs (sets of 3), kongs (sets of 4), or quints (sets of 5) can be called from the discards\n“C” = Conceled. NO tiles cannot be called from discards\n“Consecutive numbers” = Numbers must be in order (like 1-2-3)\n\n\n\nExample\nFFFF 11 22 333 DDD (Any 3 Consec. Nos. with Matching Dragons)\nThis means you do not need exactly 11 22 333, but you can use any 3 consecutive numbers (i.e. 44 55 666 or 77 88 999 would also work!). The dragons must match the suit, (i.e. if you numbers are all bams, you must use the green dragons, if your numbers are all craks you must use the red dragon, if your numbers are all dots you must use the white dragon (soap!)).\n\n\n\n\nColor Coding\nWhen numbered tiles appear in the same color on the card, they must all be from the same suit.\nDifferent colors mean you must have different suits for those tiles.\nThis visual system helps you quickly identify suit requirements at a glance.\n\n\nExample\n22 44 44 666 8888 (Any 3 Suits)\nThis means that the suit for the 22 and 44 must match, the suit for the 44 666 must match (and be different from the 22 44 suit), and the 8888 must be in the third suit.\n\n\n\nCommon Card Sections\nThe hands are grouped into sections that appear year after year:\n{Year}: Hands using the current year with numbered tiles and soaps (e.g. 2025)\n2468: Hands with only even numbers\nAny Like Numbers: All numbers are the same (e.g., all 3s)\nMath Sections: Some cards include multiplication/addition themes (e.g., FF 1111 + 6666 = 7777)\nQuints: Hands including 5-of-a-kind groupings\nConsecutive Runs: Numbers in increasing order (e.g., 1, 2, 3, 4, 5)\n13579: Hands with only odd numbers\nWinds and Dragons: Hands featuring mostly winds and dragons\n369: Hands using the numbers 3, 6, and 9\nSingles and Pairs: Hands with only single tiles and pairs\n\n\nHow to Use the Card\n\nPick a category that matches tiles you’re collecting\nRead the shorthand to see what tiles you need\nCheck the notes for specific requirements\nCount to 14 to verify it’s a complete hand\n\nThe combination of shorthand + notes tells you exactly what you need to win!\n\n\n\n\n\n\n← Previous\n\n\nNext →\n\n\n\nPro tip: The notes are just as important as the shorthand - read both carefully. Higher point values usually mean more restrictions, but if you’re playing for a score they’re worth more when you win!\n\nNext Lesson\n\n\n\nTarget Hand\n\n\n[22 44] [44 666] [8888] (Any 3 Suits)\n\n\n\n\nAvailable Tiles - Click to Add to Your Hand\n\n\n\nBamboo (1-9)\n\n\n\n\n\n\n\nCharacters (1-9)\n\n\n\n\n\n\n\nDots (1-9)\n\n\n\n\n\n\n\nWinds\n\n\n\n\n\n\n\nDragons\n\n\n\n\n\n\n\nFlowers/Jokers\n\n\n\n\n\n\n\n\nYour Selected Hand\n\n\n\nClick tiles above to build your hand…\n\n\n\n\n\n\n\n\nCheck Hand\n\n\nClear All\n\n\nNew Hand"
   },
   {
     "objectID": "posts/5-charleston/index.html",
     "href": "posts/5-charleston/index.html",
     "title": "The Charleston",
     "section": "",
-    "text": "After the tiles are dealt, the game begins with a pass called the Charleston. Here, each player passes 3 tiles at a time to other players. A Charleston consists of 3 passes. On the last pass, you can do what is called a blind pass. This means that instead of choosing 3 of your tiles to pass you can choose 0, 1, or 2, and complete the set of three by passing what you were given (without looking). If all players agree, you can do two Charlestons prior to the start of the game. At the end of the Charleston you can also do a courtesy pass of up to 3 tiles with the player across from you. You and the player agree on how many you would like to pass, it is fine to pass 0 if you do not want to pass any more. Let’s practice!\n\n\nPractice the Charleston:\nSelect 3 tiles to pass each time. Drag the tiles to the correct player.\nFirst Charleston: Right → Across → Left\nSecond Charleston: Left → Across → Right\nBlind passes can be made on the 2nd Left and 2rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharleston Complete!\n\n\nContinue\n\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Charleston\n\n\nNew Game\n\n\nHelp\n\n\nClear Selection\n\n\nSort Hand"
+    "text": "After the tiles are dealt, the game begins with a Charleston - a series of tile exchanges between players. Each Charleston consists of three passes, with each player passing exactly 3 tiles during each pass.\nThe final pass of a Charleston can be a blind pass. Instead of selecting 3 tiles from your hand, you can choose 0, 1, or 2 tiles from your own collection and complete the set of 3 by including tiles you just received from another player (without looking at them first).\nIf all players agree, you can complete two full Charlestons before starting the main game. The order of the passes are:\nFirst Charleston: Right → Across → Left\nSecond Charleston: Left → Across → Right\nAfter the Charleston(s), players may make an optional courtesy pass with the player sitting across from them. Both players must agree on how many tiles to exchange (0-3 tiles each). Either player can decline to pass any tiles.\nLet’s practice!\n\n\nPractice the Charleston:\nSelect 3 tiles to pass each time. Drag the tiles to the correct player.\nFirst Charleston: Right → Across → Left\nSecond Charleston: Left → Across → Right\nBlind passes can be made on the 2nd Left and 2rd Right.\n\n\n\n\n1\n\nCharleston\n\n\n\n1\n\nPass\n\n\n\n0\n\nTiles Selected\n\n\n\n\nPass Right\n\n\n\n\nYou\n\n\n\n\n\n\n\nRight\n\n\n\n\n\n\n\nAcross\n\n\n\n\n\n\n\nLeft\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCharleston Complete!\n\n\nContinue\n\n\n\n\n\n\nBlind Pass\n\n\nSkip 2nd Charleston\n\n\nNew Game\n\n\nHelp\n\n\nClear Selection\n\n\nSort Hand\n\n\n\nNext Lesson"
   }
 ]
