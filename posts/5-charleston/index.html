@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-a4c725aaa911ae58e872a1a503fea0dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-1f8d2cba1b3ce9b839dc6053989f0119.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -835,19 +835,60 @@ class UIRenderer {
         if (backdrop) backdrop.style.display = 'none';
     }
     
-    /**
-     * **REWRITTEN**
-     * Attaches a simple click listener for tile selection.
-     * The drag-and-drop handler in MahjongUtils will correctly prevent
-     * this from firing during a drag gesture on mobile.
-     */
     attachTileEventListeners(tileElement) {
+        let isDragging = false;
+        let touchStartTime = 0;
+        const TAP_TIMEOUT = 250; // Max duration of a tap in milliseconds
+        const DRAG_THRESHOLD = 10; // Min distance moved in pixels to be a drag
+
         tileElement.addEventListener('click', (e) => {
+            if (e.pointerType === 'touch') {
+                return;
+            }
             if (window.charlestonGame) {
                 window.charlestonGame.selectTile(tileElement);
             }
         });
+
+
+        tileElement.addEventListener('touchstart', (e) => {
+            isDragging = false;
+            touchStartTime = new Date().getTime();
+            const touch = e.touches[0];
+            tileElement.dataset.startX = touch.clientX;
+            tileElement.dataset.startY = touch.clientY;
+        }, { passive: true });
+
+        tileElement.addEventListener('touchmove', (e) => {
+            if (isDragging) return;
+
+            const touch = e.touches[0];
+            const startX = parseFloat(tileElement.dataset.startX || "0");
+            const startY = parseFloat(tileElement.dataset.startY || "0");
+
+            if (
+                Math.abs(touch.clientX - startX) > DRAG_THRESHOLD ||
+                Math.abs(touch.clientY - startY) > DRAG_THRESHOLD
+            ) {
+                isDragging = true;
+            }
+        }, { passive: true });
+
+        tileElement.addEventListener('touchend', (e) => {
+            const duration = new Date().getTime() - touchStartTime;
+
+            if (!isDragging && duration < TAP_TIMEOUT) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (window.charlestonGame) {
+                    window.charlestonGame.selectTile(tileElement);
+                }
+                tileElement.style.opacity = '1';
+            }
+        });
     }
+
 
     updatePlayerHand(playerId, tiles, isYou = false) {
         const container = this.handContainers[playerId];
@@ -903,7 +944,7 @@ class UIRenderer {
     updateTileContent(tileElement, tileCode, isYou) {
         if (isYou) {
             const svgPath = this.getTileSvgPath(tileCode);
-            tileElement.innerHTML = `<img src="${svgPath}" alt="${tileCode}" class="tile-image-play" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none;">`;
+            tileElement.innerHTML = `<img src="${svgPath}" alt="${tileCode}" class="tile-image-play" style="width: 100%; height: 100%; object-fit: contain;">`;
         } else {
             tileElement.innerHTML = '';
         }
@@ -1109,11 +1150,6 @@ class CharlestonGame {
         });
     }
 
-    /**
-     * **REWRITTEN**
-     * Handles tile selection. Only adds a tile if not already selected
-     * and if fewer than 3 tiles are selected. Does not handle unselecting.
-     */
     selectTile(tileElement) {
         const tileElementId = tileElement.dataset.tileId;
         const tileCode = tileElement.dataset.tileCode;
@@ -1420,10 +1456,6 @@ class CharlestonGame {
         alert(helpText);
     }
 
-    /**
-     * **REWRITTEN**
-     * Attaches event listeners for the new buttons.
-     */
     setupEventListeners() {
         document.getElementById('blind-pass-btn')?.addEventListener('click', () => this.makeBlindPass());
         document.getElementById('skip-btn')?.addEventListener('click', () => this.skipSecondPass());
