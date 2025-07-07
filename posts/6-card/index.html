@@ -783,13 +783,17 @@ carousel.addEventListener('scroll', () => {
             if (!reminder) return;
             
             const isMobile = window.innerWidth <= 768 || window.innerHeight <= 500;
-            const isLandscape = window.innerHeight < window.innerWidth;
+            const isPortrait = window.innerHeight > window.innerWidth;
             
-            // Additional check for mobile devices - show reminder when in portrait
-            if (isMobile && !isLandscape) {
+            // Show reminder only when device is mobile AND in portrait mode
+            if (isMobile && isPortrait) {
+                reminder.style.display = 'flex';
                 console.log('Mobile portrait detected - rotation reminder active');
+            } else {
+                reminder.style.display = 'none';
             }
         }
+        
         // Wait for DOM to be ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', function() {
@@ -798,6 +802,7 @@ carousel.addEventListener('scroll', () => {
         } else {
             handleOrientationChange();
         }
+        
         // Listen for orientation and resize events
         window.addEventListener('orientationchange', function() {
             setTimeout(handleOrientationChange, 100);
